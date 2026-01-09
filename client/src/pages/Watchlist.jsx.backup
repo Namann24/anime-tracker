@@ -1,0 +1,581 @@
+import { useEffect, useState } from "react";
+import {
+  getWatchlist,
+  addWatchlist,
+  deleteWatchlist,
+  updateWatchStatus,
+  toggleEpisode,
+  updateWatchlistDetails
+} from "../services/watchlistService";
+
+import { searchAnime, getAnimeRelations, getAnimeById } from "../services/animeService";
+import { useWatchlist } from "../context/WatchlistContext";
+import { useNavigate } from "react-router-dom";
+
+export default function Watchlist() {
+  const navigate = useNavigate();
+  const {
+    watchlist,
+    updateLocalWatchlist,
+    addToLocalWatchlist,
+    removeFromLocalWatchlist,
+    showSpoilers,
+    setShowSpoilers
+  } = useWatchlist();
+
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [activeSeason, setActiveSeason] = useState({});
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [expandedAnime, setExpandedAnime] = useState(null);
+
+  // Edit Modal State
+  const [editingAnime, setEditingAnime] = useState(null);
+  const [editForm, setEditForm] = useState({ totalSeasons: 1, episodesPerSeason: 12 });
+  const [checkingSequel, setCheckingSequel] = useState({});
+
+  // Filtered Watchlist
+  const filteredWatchlist = watchlist.filter(anime => {
+    if (activeFilter === "All") return true;
+    return anime.status === activeFilter;
+  });
+
+  // 🔍 SEARCH (Debounced)
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (query.trim()) {
+        const res = await searchAnime(query);
+        setResults(res);
+      } else {
+        setResults([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [query]);
+
+  const handleSearch = async () => {
+    if (!query.trim()) return;
+    const res = await searchAnime(query);
+    setResults(res);
+  };
+
+  // ➕ ADD FROM SEARCH
+  const handleAdd = async (anime) => {
+    try {
+      const totalEpisodes = anime.episodes || 12;
+      const totalSeasons = anime.seasons || 1;
+
+      const image =
+        anime.images?.jpg?.large_image_url ||
+        anime.images?.jpg?.image_url ||
+        anime.images?.webp?.large_image_url ||
+        anime.images?.webp?.image_url;
+
+      const genres = anime.genres?.map(g => g.name) || [];
+      const score = anime.score || 0;
+
+      const res = await addWatchlist({
+        title: anime.title,
+        image,
+        mal_id: anime.mal_id,
+        genres,
+        score,
+        totalSeasons,
+        episodesPerSeason: Math.ceil(totalEpisodes / totalSeasons),
+      });
+
+      addToLocalWatchlist(res.data);
+      setResults([]);
+      setQuery("");
+    } catch (error) {
+      console.error("Failed to add anime", error);
+    }
+  };
+
+  const handleRemove = async (id) => {
+    await deleteWatchlist(id);
+    removeFromLocalWatchlist(id);
+  };
+
+  const handleStatus = async (id, status) => {
+    const res = await updateWatchStatus(id, status);
+    let updatedAnime = res.data;
+
+    // Auto-mark all episodes as watched when status is "Completed"
+    if (status === "Completed") {
+      // Mark all episodes in all seasons as watched
+      for (const season of updatedAnime.seasons) {
+        const allEpisodes = Array.from({ length: season.totalEpisodes }, (_, i) => i + 1);
+        const unwatchedEpisodes = allEpisodes.filter(ep => !season.watchedEpisodes.includes(ep));
+
+        // Toggle each unwatched episode
+        for (const episode of unwatchedEpisodes) {
+          const episodeRes = await toggleEpisode(id, season.seasonNumber, episode);
+          updatedAnime = episodeRes.data;
+        }
+      }
+    }
+
+    updateLocalWatchlist(updatedAnime);
+  };
+
+  const handleEpisodeToggle = async (id, season, ep) => {
+    const res = await toggleEpisode(id, season, ep);
+    updateLocalWatchlist(res.data);
+  };
+
+  const handleResetProgress = async (id) => {
+    const anime = watchlist.find(a => a._id === id);
+    if (!anime) return;
+
+    // Unmark all watched episodes
+    for (const season of anime.seasons) {
+      for (const episode of season.watchedEpisodes) {
+        const res = await toggleEpisode(id, season.seasonNumber, episode);
+        updateLocalWatchlist(res.data);
+      }
+    }
+  };
+
+  const openEditModal = (anime) => {
+    setEditingAnime(anime);
+    setEditForm({
+      totalSeasons: anime.seasons.length,
+      episodesPerSeason: anime.seasons[0]?.totalEpisodes || 12
+    });
+  };
+
+  const handleEditSubmit = async () => {
+    if (!editingAnime) return;
+    try {
+      const res = await updateWatchlistDetails(editingAnime._id, editForm);
+      updateLocalWatchlist(res.data);
+      setEditingAnime(null);
+    } catch (error) {
+      console.error("Failed to update", error);
+    }
+  };
+
+  const handleFindSequel = async (anime) => {
+    if (!anime.mal_id) {
+      console.warn("Cannot find sequel: Missing ID.");
+      return;
+    }
+
+    setCheckingSequel({ ...checkingSequel, [anime._id]: true });
+
+    try {
+      const relations = await getAnimeRelations(anime.mal_id);
+      const sequel = relations.find(r => r.relation === "Sequel");
+
+      if (sequel && sequel.entry && sequel.entry.length > 0) {
+        const sequelId = sequel.entry[0].mal_id;
+        const details = await getAnimeById(sequelId);
+        await handleAdd(details);
+      } else {
+        console.log("No sequel found for this anime.");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      const newState = { ...checkingSequel };
+      delete newState[anime._id];
+      setCheckingSequel(newState);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      "Watching": "from-blue-500 to-cyan-500",
+      "Completed": "from-green-500 to-emerald-500",
+      "Plan to Watch": "from-purple-500 to-pink-500",
+      "On Hold": "from-yellow-500 to-orange-500",
+      "Dropped": "from-red-500 to-rose-500"
+    };
+    return colors[status] || "from-gray-500 to-gray-600";
+  };
+
+  return (
+    <div className="min-h-screen bg-[#080a0f] text-white pb-20">
+      <div className="max-w-[1400px] mx-auto p-4 md:p-8">
+        {/* HEADER */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-black text-white flex items-center gap-3 mb-2">
+              <span className="w-1.5 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.4)]"></span>
+              My Collection
+            </h2>
+            <p className="text-sm text-gray-500 ml-7">Track your anime journey with precision</p>
+          </div>
+
+          <div className="text-sm text-gray-400 bg-[#111419]/50 px-4 py-2 rounded-xl border border-white/5">
+            <span className="font-black text-white">{filteredWatchlist.length}</span> {activeFilter !== "All" ? activeFilter : "Total"} Anime
+          </div>
+        </div>
+
+        {/* CONTROLS: FILTER & SPOILERS */}
+        <div className="flex flex-wrap items-center gap-4 mb-10 bg-[#111419]/50 p-3 rounded-2xl border border-white/5 backdrop-blur-xl">
+          <div className="flex flex-wrap gap-2">
+            {["All", "Watching", "Completed", "Plan to Watch", "On Hold", "Dropped"].map(f => (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeFilter === f
+                  ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                  : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"
+                  }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          <div className="h-6 w-px bg-white/10 hidden md:block"></div>
+
+          <button
+            onClick={() => setShowSpoilers(!showSpoilers)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${showSpoilers
+              ? "bg-green-500/10 text-green-400 border border-green-500/20"
+              : "bg-red-500/10 text-red-400 border border-red-500/20"
+              }`}
+          >
+            {showSpoilers ? "👁️ Spoilers Shown" : "🙈 Spoilers Hidden"}
+          </button>
+        </div>
+
+        {/* SEARCH */}
+        <div className="mb-12 relative max-w-2xl z-20">
+          <div className="relative group">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors text-xl">🔍</span>
+            <input
+              className="w-full pl-12 pr-4 py-4 bg-[#111419]/80 border border-white/10 rounded-2xl shadow-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition backdrop-blur-xl text-white placeholder:text-gray-600"
+              placeholder="Search anime to add to your collection..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            />
+          </div>
+
+          {results.length > 0 && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setResults([])}></div>
+              <div className="absolute z-20 w-full mt-3 bg-[#111419]/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/10 max-h-[500px] overflow-y-auto overflow-x-hidden p-2">
+                {results.map((a) => (
+                  <div
+                    key={a.mal_id}
+                    className="p-3 hover:bg-white/5 cursor-pointer rounded-xl transition flex gap-4 relative z-30 group/item border border-transparent hover:border-white/10 mb-1"
+                    onClick={() => handleAdd(a)}
+                  >
+                    <div className="w-16 h-24 flex-shrink-0 relative overflow-hidden rounded-lg shadow-lg">
+                      <img src={a.images?.jpg?.small_image_url} alt="" className="w-full h-full object-cover transform group-hover/item:scale-110 transition" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-white truncate pr-10">{a.title}</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] font-black uppercase bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20">
+                          {a.type || "TV"}
+                        </span>
+                        <span className="text-xs text-gray-500 font-medium">{a.episodes || "?"} eps</span>
+                        <span className="text-xs text-yellow-400 font-bold">★ {a.score || "N/A"}</span>
+                      </div>
+                      <p className={`text-xs text-gray-500 mt-2 line-clamp-2 transition-all ${!showSpoilers ? 'blur-sm select-none opacity-50' : 'blur-0'}`}>
+                        {a.synopsis || "No synopsis available."}
+                      </p>
+                    </div>
+                    <button className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 bg-gradient-to-r from-blue-500 to-purple-500 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-all transform scale-75 group-hover/item:scale-100 font-bold text-lg">
+                      +
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* WATCHLIST GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20" style={{ overflow: 'visible' }}>
+          {filteredWatchlist.map((anime) => {
+            const season = activeSeason[anime._id] ?? anime.seasons?.[0]?.seasonNumber;
+            const seasonData = anime.seasons.find(s => s.seasonNumber === season);
+            const totalWatched = anime.seasons?.reduce((acc, s) => acc + s.watchedEpisodes.length, 0) || 0;
+            const totalEpisodes = anime.seasons?.reduce((acc, s) => acc + s.totalEpisodes, 0) || 0;
+            const progress = totalEpisodes > 0 ? Math.round((totalWatched / totalEpisodes) * 100) : 0;
+            const isExpanded = expandedAnime === anime._id;
+
+            return (
+              <div
+                key={anime._id}
+                className="group relative bg-[#111419]/60 backdrop-blur-xl rounded-2xl border border-white/10 overflow-visible transition-all duration-300 hover:border-white/20 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]"
+              >
+                {/* IMAGE WITH OVERLAY */}
+                <div className="relative h-80 overflow-hidden">
+                  {anime.image ? (
+                    <img src={anime.image} alt={anime.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-800 text-gray-600">No Image</div>
+                  )}
+
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+
+                  {/* Status Badge */}
+                  <div className={`absolute top-3 right-3 px-3 py-1.5 rounded-full text-[10px] font-black uppercase bg-gradient-to-r ${getStatusColor(anime.status)} shadow-lg backdrop-blur-sm`}>
+                    {anime.status}
+                  </div>
+
+                  {/* Title & Progress */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-base font-bold text-white leading-tight mb-3 line-clamp-2">
+                      {anime.title}
+                    </h3>
+
+                    {/* Progress Bar */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-bold text-gray-300">
+                        <span>{totalWatched} / {totalEpisodes} Episodes</span>
+                        <span>{progress}%</span>
+                      </div>
+                      <div className="h-2 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+                        <div
+                          className={`h-full bg-gradient-to-r ${getStatusColor(anime.status)} transition-all duration-500 shadow-lg`}
+                          style={{ width: `${progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* QUICK ACTIONS */}
+                <div className="p-4 space-y-3 bg-[#0d1117]/90 backdrop-blur-sm relative z-10">
+                  {/* Unique Horizontal Pill Status Selector - No Dropdown! */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {[
+                      { status: "Plan to Watch", icon: "📋", color: "purple" },
+                      { status: "Watching", icon: "👀", color: "blue" },
+                      { status: "Completed", icon: "✅", color: "green" },
+                      { status: "On Hold", icon: "⏸️", color: "yellow" },
+                      { status: "Dropped", icon: "❌", color: "red" }
+                    ].map(({ status, icon, color }) => {
+                      const isActive = anime.status === status;
+                      const colorClasses = {
+                        purple: isActive ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg scale-105" : "bg-purple-500/10 text-purple-300 hover:bg-purple-500/20",
+                        blue: isActive ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg scale-105" : "bg-blue-500/10 text-blue-300 hover:bg-blue-500/20",
+                        green: isActive ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg scale-105" : "bg-green-500/10 text-green-300 hover:bg-green-500/20",
+                        yellow: isActive ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg scale-105" : "bg-yellow-500/10 text-yellow-300 hover:bg-yellow-500/20",
+                        red: isActive ? "bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg scale-105" : "bg-red-500/10 text-red-300 hover:bg-red-500/20"
+                      };
+
+                      return (
+                        <button
+                          key={status}
+                          onClick={() => handleStatus(anime._id, status)}
+                          className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-[10px] font-black uppercase tracking-wide transition-all ${colorClasses[color]} ${isActive ? '' : 'hover:scale-105'}`}
+                        >
+                          <span className="text-sm">{icon}</span>
+                          <span className="hidden sm:inline">{status}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Episode Button */}
+                  <div>
+                    <button
+                      onClick={() => setExpandedAnime(isExpanded ? null : anime._id)}
+                      className="w-full px-5 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 text-blue-300 rounded-xl text-xs font-black uppercase tracking-wide hover:from-blue-500/30 hover:to-purple-500/30 hover:border-blue-400/50 transition-all shadow-lg hover:shadow-blue-500/20"
+                    >
+                      {isExpanded ? "✕ Close Episodes" : "▶ View Episodes"}
+                    </button>
+                  </div>
+
+                  {/* Status Menu Popover - Rendered outside to avoid clipping */}
+                  {expandedAnime === `status-${anime._id}` && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-[999]"
+                        onClick={() => setExpandedAnime(null)}
+                      ></div>
+                      <div
+                        className="fixed bg-[#1a1f2e]/98 backdrop-blur-2xl rounded-xl shadow-2xl border border-white/20 z-[1000] animate-in slide-in-from-top-2 duration-200 min-w-[200px]"
+                        style={{
+                          top: `${document.querySelector(`button[data-status-id="${anime._id}"]`)?.getBoundingClientRect().bottom + 8}px`,
+                          left: `${document.querySelector(`button[data-status-id="${anime._id}"]`)?.getBoundingClientRect().left}px`,
+                          width: `${document.querySelector(`button[data-status-id="${anime._id}"]`)?.getBoundingClientRect().width}px`
+                        }}
+                      >
+                        {[
+                          { status: "Plan to Watch", icon: "📋", gradient: "from-purple-500 to-pink-500" },
+                          { status: "Watching", icon: "👀", gradient: "from-blue-500 to-cyan-500" },
+                          { status: "Completed", icon: "✅", gradient: "from-green-500 to-emerald-500" },
+                          { status: "On Hold", icon: "⏸️", gradient: "from-yellow-500 to-orange-500" },
+                          { status: "Dropped", icon: "❌", gradient: "from-red-500 to-rose-500" }
+                        ].map(({ status, icon, gradient }) => (
+                          <button
+                            key={status}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleStatus(anime._id, status);
+                              setExpandedAnime(null);
+                            }}
+                            className={`w-full p-3 flex items-center gap-3 transition-all text-left border-b border-white/5 last:border-0 ${anime.status === status
+                              ? `bg-gradient-to-r ${gradient} text-white font-black shadow-lg`
+                              : 'text-gray-300 hover:bg-white/10 font-bold'
+                              }`}
+                          >
+                            <span className="text-lg">{icon}</span>
+                            <span className="text-xs uppercase tracking-wide">{status}</span>
+                            {anime.status === status && (
+                              <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                              </svg>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${checkingSequel[anime._id]
+                        ? "bg-gray-800/50 text-gray-500 cursor-not-allowed"
+                        : "bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 text-purple-400 hover:border-purple-500/40"
+                        }`}
+                      onClick={() => handleFindSequel(anime)}
+                      disabled={checkingSequel[anime._id]}
+                    >
+                      {checkingSequel[anime._id] ? "Searching..." : "Next Season →"}
+                    </button>
+
+                    <button
+                      className="p-2 bg-white/5 border border-white/10 text-gray-400 hover:text-orange-400 hover:border-orange-500/20 rounded-xl transition"
+                      onClick={() => handleResetProgress(anime._id)}
+                      title="Reset Progress (for rewatching)"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                      </svg>
+                    </button>
+
+                    <button
+                      className="p-2 bg-white/5 border border-white/10 text-gray-400 hover:text-blue-400 hover:border-blue-500/20 rounded-xl transition"
+                      onClick={() => openEditModal(anime)}
+                      title="Edit Details"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                      </svg>
+                    </button>
+
+                    <button
+                      className="p-2 bg-white/5 border border-white/10 text-gray-400 hover:text-red-400 hover:border-red-500/20 rounded-xl transition"
+                      onClick={() => handleRemove(anime._id)}
+                      title="Remove from Watchlist"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* EXPANDED EPISODE GRID */}
+                {isExpanded && (
+                  <div className="p-4 bg-[#0d1117] border-t border-white/10 animate-in slide-in-from-top-2 duration-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Season {season}</span>
+                      <select
+                        value={season}
+                        onChange={(e) => setActiveSeason({ ...activeSeason, [anime._id]: Number(e.target.value) })}
+                        className="p-1.5 bg-white/5 border border-white/10 rounded-lg text-white text-xs font-bold outline-none"
+                      >
+                        {anime.seasons.map((s) => (
+                          <option key={s.seasonNumber} value={s.seasonNumber} className="bg-gray-900">
+                            Season {s.seasonNumber}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-6 gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                      {seasonData && Array.from({ length: seasonData.totalEpisodes }, (_, i) => i + 1).map((ep) => {
+                        const watched = seasonData.watchedEpisodes.includes(ep);
+                        return (
+                          <button
+                            key={ep}
+                            onClick={() => handleEpisodeToggle(anime._id, season, ep)}
+                            className={`h-10 rounded-lg text-xs font-bold transition-all ${watched
+                              ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
+                              : "bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10"
+                              }`}
+                          >
+                            {ep}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {filteredWatchlist.length === 0 && (
+            <div className="col-span-full text-center py-24 bg-[#111419]/30 rounded-2xl border border-dashed border-white/10">
+              <div className="text-6xl mb-4 opacity-20">📺</div>
+              <p className="text-lg font-bold text-gray-400 mb-2">No {activeFilter !== "All" ? activeFilter : ""} anime in your collection</p>
+              <p className="text-sm text-gray-600">Start searching above to build your watchlist!</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* EDIT MODAL */}
+      {editingAnime && (
+        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md">
+          <div className="bg-[#111419] border border-white/10 rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <h3 className="text-2xl font-black mb-6 text-white">Edit {editingAnime.title}</h3>
+
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Total Seasons</label>
+                <input
+                  type="number" min="1"
+                  className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition"
+                  value={editForm.totalSeasons}
+                  onChange={e => setEditForm({ ...editForm, totalSeasons: Number(e.target.value) })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Episodes Per Season</label>
+                <input
+                  type="number" min="1"
+                  className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition"
+                  value={editForm.episodesPerSeason}
+                  onChange={e => setEditForm({ ...editForm, episodesPerSeason: Number(e.target.value) })}
+                />
+                <p className="text-xs text-gray-600 mt-2">This will resize all seasons. Use with caution.</p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-8">
+              <button
+                onClick={() => setEditingAnime(null)}
+                className="px-6 py-3 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl font-bold transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditSubmit}
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-bold hover:shadow-lg transition transform hover:scale-105"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
