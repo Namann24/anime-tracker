@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5001/api/clubs";
+const API_URL = `${import.meta.env.VITE_BACKED_URL}/api/clubs`;
 
 // Get token helper
 const authHeader = () => {

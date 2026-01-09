@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:5001/api/auth";
+const API = `${import.meta.env.VITE_BACKED_URL}/api/auth`;
 
 export const loginUser = async (data) => {
   const res = await axios.post(`${API}/login`, data);
