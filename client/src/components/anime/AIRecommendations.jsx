@@ -2,25 +2,26 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAIRecommendations } from "../../services/animeService";
 import { useWatchlist } from "../../context/WatchlistContext";
-import { addWatchlist, deleteWatchlist } from "../../services/watchlistService";
+
+import { Flame, Brain, Sparkles, RefreshCw, Plus, Check, Info } from "lucide-react";
+import SagaSkeleton from "../common/SagaSkeleton";
+import SagaButton from "../common/SagaButton";
 
 export default function AIRecommendations() {
-    const { watchlist, addToLocalWatchlist, removeFromLocalWatchlist, loading: watchlistLoading } = useWatchlist();
+    const { watchlist, addToWatchlist, removeFromWatchlist, loading: watchlistLoading } = useWatchlist();
     const [recommendations, setRecommendations] = useState([]);
     const [loading, setLoading] = useState(false);
     const [addingId, setAddingId] = useState(null);
     const [hasAttempted, setHasAttempted] = useState(false);
+    const [error, setError] = useState(null);
 
     const isInWatchlist = (malId) => watchlist.some(a => a.mal_id === malId);
 
     useEffect(() => {
-        // Only attempt if not already loading and we have a watchlist (even if empty, but after watchlistLoading is false)
         if (!watchlistLoading) {
             loadRecs();
         }
     }, [watchlist.length, watchlistLoading]);
-
-    const [error, setError] = useState(null);
 
     const loadRecs = async () => {
         if (!watchlist || watchlist.length === 0) {
@@ -30,7 +31,6 @@ export default function AIRecommendations() {
 
         setLoading(true);
         setError(null);
-        // Clear previous recommendations to show skeleton state during refresh
         setRecommendations([]);
 
         try {
@@ -55,22 +55,16 @@ export default function AIRecommendations() {
 
         try {
             if (existingItem) {
-                // Remove
-                await deleteWatchlist(existingItem._id);
-                removeFromLocalWatchlist(existingItem._id);
+                await removeFromWatchlist(existingItem._id);
             } else {
-                // Add
-                const image = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url;
-                const res = await addWatchlist({
+                await addToWatchlist({
                     title: anime.title,
-                    image,
                     mal_id: anime.mal_id,
-                    genres: anime.genres?.map(g => g.name) || [],
-                    score: anime.score || 0,
-                    totalEpisodes: anime.episodes || 12,
-                    totalSeasons: anime.seasons || 1,
+                    images: anime.images,
+                    score: anime.score,
+                    episodes: anime.episodes,
+                    genres: anime.genres
                 });
-                addToLocalWatchlist(res.data);
             }
         } catch (err) {
             console.error(err);
@@ -81,17 +75,21 @@ export default function AIRecommendations() {
 
     if (!hasAttempted || watchlistLoading || (loading && recommendations.length === 0)) {
         return (
-            <div className="py-12 border-b border-gray-100 dark:border-gray-900 mb-12">
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 bg-blue-600/10 dark:bg-blue-600/20 text-blue-600 rounded-2xl flex items-center justify-center animate-pulse text-2xl">🤖</div>
+            <div className="py-16 border-b border-saga-border mb-16">
+                <div className="flex items-center gap-6 mb-12 animate-pulse">
+                    <div className="w-16 h-16 bg-saga-accent/10 text-saga-accent rounded-[2rem] border border-saga-accent/20 flex items-center justify-center text-3xl">
+                        <Brain className="w-8 h-8" />
+                    </div>
                     <div>
-                        <h2 className="text-2xl font-black text-gray-900 dark:text-white">AI is Thinking...</h2>
-                        <p className="text-gray-500 text-sm">Scanning your taste to find perfect matches.</p>
+                        <h2 className="font-shonen text-4xl text-saga-text uppercase">NEURAL SCANNING</h2>
+                        <p className="text-saga-text-dim text-sm font-medium italic">Synchronizing with your soul's resonance...</p>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                        <div key={i} className="aspect-[2/3] bg-gray-200 dark:bg-gray-800/50 rounded-2xl animate-pulse"></div>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-5">
+                    {[...Array(8)].map((_, i) => (
+                        <div key={i} className="aspect-[2/3] bg-saga-surface rounded-2xl border border-saga-border relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-saga-surface-hover to-transparent -translate-x-full animate-shimmer"></div>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -99,39 +97,34 @@ export default function AIRecommendations() {
     }
 
     if (recommendations.length === 0) {
-        // Only show if we explicitly have a watchlist but no recs could be generated or watchlist is empty
         const isWatchlistEmpty = !watchlist || watchlist.length === 0;
 
         return (
-            <div className="py-12 bg-gray-50 dark:bg-gray-900/40 rounded-3xl px-8 border border-gray-100 dark:border-gray-800 mb-12">
-                <div className="flex flex-col md:flex-row items-center gap-6">
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl transition-colors ${error ? 'bg-red-500/10 text-red-500' : 'bg-blue-600/10 dark:bg-blue-600/20 text-blue-600'}`}>
-                        {error ? '🔌' : '🤖'}
+            <div className="py-20 bg-saga-surface rounded-[3rem] px-12 border border-saga-border mb-24 relative overflow-hidden group/empty backdrop-blur-md">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-saga-accent/5 blur-[100px] rounded-full"></div>
+                <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
+                    <div className="w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 bg-saga-surface border border-saga-border group-hover/empty:border-saga-accent/50 group-hover/empty:shadow-neon-red">
+                        {error ? <Info className="w-10 h-10 text-red-500" /> : <Brain className="w-10 h-10 text-saga-accent" />}
                     </div>
                     <div className="flex-1 text-center md:text-left">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                            {error ? "Service Temporarily Busy" : (isWatchlistEmpty ? "Unlock AI Recommendations" : "More Data Needed")}
+                        <h2 className="font-shonen text-4xl text-saga-text mb-2">
+                            {error ? "SERVICE DISRUPTION" : (isWatchlistEmpty ? "UNLOCK YOUR DESTINY" : "MORE DATA REQUIRED")}
                         </h2>
-                        <p className={`text-sm max-w-md ${error ? 'text-red-500/80' : 'text-gray-500 dark:text-gray-400'}`}>
+                        <p className={`text-base font-medium italic ${error ? 'text-red-500/80' : 'text-saga-text-dim'}`}>
                             {error || (isWatchlistEmpty
-                                ? "Add at least 3 anime to your watchlist so our AI can learn your taste."
-                                : "We need a bit more data about your taste, or Jikan is slow today. Try adding a few more series!")}
+                                ? "Add at least 3 sagas to your chronicles so our AI can learn your true resonance."
+                                : "We need a bit more data about your taste. Add a few more series to prime the engine.")}
                         </p>
                     </div>
                     {!isWatchlistEmpty && (
-                        <button
-                            onClick={loadRecs}
-                            disabled={loading}
-                            className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/20 flex items-center gap-2"
-                        >
-                            <span className={loading ? 'animate-spin' : ''}>✨</span>
-                            {loading ? "Analyzing..." : "Try Refresh"}
-                        </button>
+                        <SagaButton variant="primary" onClick={loadRecs} disabled={loading} icon={<RefreshCw className={loading ? 'animate-spin' : ''} />}>
+                            {loading ? "Analyzing..." : "Refresh Engine"}
+                        </SagaButton>
                     )}
                     {isWatchlistEmpty && (
-                        <Link to="/watchlist" className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/20">
+                        <SagaButton variant="impact" onClick={() => window.location.href = '/watchlist'}>
                             Build My List
-                        </Link>
+                        </SagaButton>
                     )}
                 </div>
             </div>
@@ -139,60 +132,61 @@ export default function AIRecommendations() {
     }
 
     return (
-        <div className="py-12">
-            <div className="flex items-center justify-between mb-8">
+        <div className="py-16">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                 <div>
-                    <div className="flex items-center gap-3 mb-1">
-                        <span className="px-2 py-0.5 bg-blue-600 text-[10px] font-black text-white rounded uppercase tracking-widest">AI Powered</span>
-                        <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">Recommendations For You</h2>
+                    <div className="flex items-center gap-3 mb-2">
+                        <span className="px-2 py-0.5 bg-saga-accent/20 border border-saga-accent/30 text-[9px] font-black text-saga-accent rounded uppercase tracking-[0.2em] shadow-neon-red/10">Neural Analysis</span>
+                        <h2 className="font-shonen text-4xl md:text-5xl text-saga-text uppercase leading-none">DESTINY DISCOVERIES</h2>
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400">Based on the genres you love most.</p>
+                    <p className="text-saga-text-dim text-sm font-medium italic">Custom chronicles predicted by the Prophecy Engine based on your watchlist.</p>
                 </div>
-                <button
+                <SagaButton
+                    variant="secondary"
+                    size="sm"
                     onClick={loadRecs}
                     disabled={loading}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600/10 hover:bg-blue-600/20 text-blue-600 dark:text-blue-400 font-bold rounded-xl transition-all active:scale-95 group/btn disabled:opacity-50"
-                    title="Refresh Recommendations"
+                    className="self-start md:self-auto"
+                    icon={<RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />}
                 >
-                    <span className={`transition-transform duration-700 ${loading ? 'animate-spin' : 'group-hover/btn:rotate-180'}`}>✨</span>
-                    <span className="text-xs uppercase tracking-wider">Shuffle AI</span>
-                </button>
+                    Recalibrate Neural Link
+                </SagaButton>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-5">
                 {recommendations.map(anime => (
                     <div key={anime.mal_id} className="group relative">
-                        <div className="aspect-[2/3] overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 relative shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
+                        <div className="aspect-[2/3] overflow-hidden rounded-2xl bg-saga-surface border border-saga-border relative shadow-lg transition-all duration-500 hover:-translate-y-2 hover:border-saga-accent/50 group-hover:shadow-2xl">
                             <img
                                 src={anime.images?.jpg?.image_url}
                                 alt={anime.title}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 blur-0"
                             />
 
                             {/* Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
-                                <div className="text-[10px] font-bold text-blue-400 mb-1">{anime.genres?.[0]?.name}</div>
-                                <div className="text-white text-xs font-bold line-clamp-2 mb-3">{anime.title}</div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-4">
+                                <div className="text-[9px] font-black text-saga-accent uppercase tracking-widest mb-1.5">{anime.genres?.[0]?.name}</div>
+                                <div className="text-white text-xs font-black line-clamp-2 mb-4 leading-tight uppercase tracking-tight">{anime.title}</div>
                                 {isInWatchlist(anime.mal_id) ? (
                                     <button
                                         onClick={() => handleToggleWatchlist(anime)}
                                         disabled={addingId === anime.mal_id}
-                                        className="w-full py-2 bg-green-500/20 backdrop-blur-md border border-green-500/40 text-green-400 text-[10px] font-black rounded-lg hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/40 transition-all duration-300"
+                                        className="w-full py-2 bg-green-500/20 backdrop-blur-md border border-green-500/40 text-green-400 text-[9px] font-black rounded-lg hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/40 transition-all duration-300"
                                     >
-                                        {addingId === anime.mal_id ? "..." : "✓ ADDED TO LIST"}
+                                        {addingId === anime.mal_id ? "..." : "✓ IN CHRONICLES"}
                                     </button>
                                 ) : (
                                     <button
                                         onClick={() => handleToggleWatchlist(anime)}
                                         disabled={addingId === anime.mal_id}
-                                        className="w-full py-2 bg-blue-600 text-white text-[10px] font-black rounded-lg hover:bg-blue-700 transition"
+                                        className="w-full py-2 bg-saga-accent text-white text-[9px] font-black rounded-lg hover:shadow-neon-red transition-all duration-300 active:scale-95"
                                     >
-                                        {addingId === anime.mal_id ? "ADDING..." : "+ ADD TO LIST"}
+                                        {addingId === anime.mal_id ? "SYNCING..." : "+ ADD TO SAGA"}
                                     </button>
                                 )}
                             </div>
 
-                            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded text-[10px] font-bold text-yellow-400">
+                            <div className="absolute top-3 right-3 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-black text-amber-400 border border-white/10">
                                 ★ {anime.score}
                             </div>
                         </div>
@@ -202,3 +196,4 @@ export default function AIRecommendations() {
         </div>
     );
 }
+

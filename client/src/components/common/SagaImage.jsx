@@ -5,15 +5,15 @@ export default function SagaImage({ src, alt, className = '', containerClassName
     const [error, setError] = useState(false);
 
     return (
-        <div className={`relative overflow-hidden bg-white/5 ${containerClassName}`}>
+        <div className={`relative overflow-hidden bg-saga-surface ${containerClassName}`}>
             {/* Skeleton Pulse */}
             {!loaded && !error && (
-                <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-white/5 via-white/10 to-white/5 bg-[length:200%_100%] animate-shimmer" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-saga-surface-hover to-transparent -translate-x-full animate-shimmer" />
             )}
 
             {/* Error State */}
             {error && (
-                <div className="absolute inset-0 flex items-center justify-center bg-white/5 text-gray-700">
+                <div className="absolute inset-0 flex items-center justify-center bg-saga-surface text-saga-text-dim">
                     <span className="text-[10px] font-black uppercase tracking-widest opacity-50">Lost</span>
                 </div>
             )}

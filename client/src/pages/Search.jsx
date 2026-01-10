@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { searchAnime, getAnimeGenres } from "../services/animeService";
-import { addWatchlist, deleteWatchlist } from "../services/watchlistService";
 import { useWatchlist } from "../context/WatchlistContext";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
@@ -11,11 +10,12 @@ import SagaInput from "../components/common/SagaInput";
 import SagaSelect from "../components/common/SagaSelect";
 import SagaImage from "../components/common/SagaImage";
 import SagaSkeleton from "../components/common/SagaSkeleton";
+import { RefreshCw } from "lucide-react";
 
 export default function Search() {
     const { showToast } = useToast();
     const { user } = useAuth();
-    const { addToLocalWatchlist, removeFromLocalWatchlist, watchlist, showNSFW } = useWatchlist();
+    const { addToWatchlist, removeFromWatchlist, watchlist, showNSFW } = useWatchlist();
     const { refreshNotifications } = useNotifications();
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -218,23 +218,19 @@ export default function Search() {
         setAddingId(anime.mal_id);
         try {
             if (existingItem) {
-                await deleteWatchlist(existingItem._id);
-                removeFromLocalWatchlist(existingItem._id);
+                await removeFromWatchlist(existingItem._id || existingItem.mal_id);
             } else {
-                const res = await addWatchlist({
+                await addToWatchlist({
                     title: anime.title,
-                    image: anime.images?.jpg?.image_url,
                     mal_id: anime.mal_id,
-                    genres: anime.genres?.map(g => g.name) || [],
-                    score: anime.score || 0,
-                    totalEpisodes: anime.episodes || 12,
+                    images: anime.images, // Pass full images object as context handles mapping
+                    genres: anime.genres,
+                    score: anime.score,
+                    episodes: anime.episodes
                 });
-                addToLocalWatchlist(res.data);
             }
-            showToast(`Saga ${action} Chronicles: ${anime.title}`, 'success');
         } catch (err) {
             console.error(err);
-            showToast("Archive connection interrupted.", 'error');
         } finally {
             setAddingId(null);
         }
@@ -243,7 +239,7 @@ export default function Search() {
     const isInWatchlist = (malId) => watchlist.some(a => a.mal_id === malId);
 
     return (
-        <div className="min-h-screen pb-24 overflow-x-hidden">
+        <div className="min-h-screen pb-24 overflow-x-hidden transition-colors duration-500">
             {/* SEARCH HERO */}
             <div className="pt-32 pb-20 relative border-b border-[var(--saga-border)] z-[20]">
                 {/* Background FX */}
@@ -267,15 +263,30 @@ export default function Search() {
                                 <span className="mr-2">✕</span> Reset Filters
                             </SagaButton>
                         )}
+                        <SagaButton
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => performSearch()}
+                            disabled={loading}
+                            className="ml-auto"
+                        >
+                            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                            Refresh
+                        </SagaButton>
                     </div>
 
                     <div className="flex flex-col lg:flex-row gap-6 items-stretch relative z-50">
-                        <div className="flex-1 w-full bg-[var(--saga-surface)]/80 backdrop-blur-xl p-2 rounded-2xl border border-[var(--saga-border)] shadow-2xl focus-within:border-red-600/50 transition-colors">
+                        <div className="flex-1 w-full bg-transparent flex items-center h-16 group relative">
+                            {/* Underline Effect */}
+                            <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[var(--saga-text-dim)]/20 group-focus-within:bg-red-600 transition-colors duration-500"></div>
+                            <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-red-600 group-focus-within:w-full transition-all duration-700 ease-out"></div>
+
+                            <span className="text-red-500/50 font-mono text-xl mr-4 group-focus-within:text-red-500 transition-colors">I</span>
                             <input
-                                placeholder="Scan records for a title..."
+                                placeholder="Search the archives..."
                                 value={query}
                                 onChange={e => updateFilters("q", e.target.value)}
-                                className="w-full h-14 bg-transparent px-6 text-xl font-bold text-[var(--saga-text)] placeholder-[var(--saga-text-dim)] outline-none"
+                                className="w-full bg-transparent text-2xl font-light text-[var(--saga-text)] placeholder-[var(--saga-text-dim)]/50 outline-none tracking-wide font-sans translate-y-[-2px]"
                             />
                         </div>
 

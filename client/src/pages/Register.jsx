@@ -43,11 +43,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--saga-bg)] relative overflow-hidden px-4 transition-colors duration-500">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 halftone opacity-10 pointer-events-none"></div>
-      <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-red-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse duration-[6000ms]"></div>
-      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-red-900/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div className="min-h-screen flex items-center justify-center bg-transparent relative overflow-hidden px-4 transition-colors duration-500">
 
       <div className="max-w-md w-full relative z-10">
         <div className="bg-[var(--saga-surface)]/80 backdrop-blur-xl border border-[var(--saga-border)] rounded-[40px] shadow-2xl p-8 md:p-12 animate-in fade-in zoom-in duration-700">
@@ -60,6 +56,9 @@ export default function Register() {
             <h2 className="text-shonen-bold text-4xl text-[var(--saga-text)] mb-3 uppercase tracking-tighter">
               Create <span className="text-red-600">Legacy</span>
             </h2>
+            <div className="inline-block border border-[var(--saga-border)] bg-[var(--saga-bg)]/50 rounded px-2 py-0.5 mb-3">
+              <span className="text-[9px] font-black uppercase text-[var(--saga-text-dim)] tracking-[0.2em] relative top-px">New Protocol // Initiation</span>
+            </div>
             <p className="text-[var(--saga-text-dim)] text-sm italic">
               "Begin your chronicle within the halls of the archive."
             </p>

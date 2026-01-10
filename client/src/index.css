@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,33 +21,41 @@
 }
 
 :root.light {
-  /* LIGHT MODE (DIVINE/PLATINUM) */
-  --saga-bg: #eef2f6;
-  /* Cool Platinum */
-  --saga-accent: #e11d48;
-  /* Slightly deeper rose-red for contrast on light */
-  --saga-surface: rgba(255, 255, 255, 0.75);
-  --saga-border: rgba(0, 0, 0, 0.06);
-  --saga-text: #0f172a;
-  /* Slate 900 */
-  --saga-text-dim: #64748b;
-  /* Slate 500 */
-  --saga-glass-bg: rgba(255, 255, 255, 0.6);
-  /* Frosted Platinum */
-  --saga-halftone: rgba(0, 0, 0, 0.02);
-  --saga-speed-line: rgba(0, 0, 0, 0.02);
+  /* LIGHT MODE (DIVINE PROTOCOL) */
+  --saga-bg: #ffffff;
+  --saga-accent: #ef4444;
+  /* Red-500 for sharp contrast */
+  --saga-surface: rgba(255, 255, 255, 0.9);
+  --saga-border: rgba(0, 0, 0, 0.1);
+  --saga-text: #09090b;
+  /* Zinc-950 */
+  --saga-text-dim: #52525b;
+  /* Zinc-600 */
+  --saga-glass-bg: rgba(255, 255, 255, 0.8);
+  --saga-halftone: rgba(0, 0, 0, 0.05);
+  --saga-speed-line: rgba(0, 0, 0, 0.05);
 }
 
 html {
   scroll-behavior: smooth;
-  background-color: #050505;
+  @apply transition-colors duration-500;
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', sans-serif;
   @apply transition-colors duration-500 overflow-x-hidden;
-  background-color: transparent;
+  background-color: var(--saga-bg);
   color: var(--saga-text);
+  min-height: 100vh;
+}
+
+/* Global Smooth Theme Transition */
+/* Global Smooth Theme Transition - Scoped for Performance */
+body,
+.theme-transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
 }
 
 @layer utilities {
@@ -350,15 +360,15 @@ body {
 
     0%,
     100% {
-      transform: translate(0, 0) scale(1);
+      transform: translate(0, 0);
     }
 
     33% {
-      transform: translate(30px, -30px) scale(1.1);
+      transform: translate(15px, -15px);
     }
 
     66% {
-      transform: translate(-20px, 20px) scale(0.9);
+      transform: translate(-10px, 10px);
     }
   }
 
@@ -545,13 +555,13 @@ body {
   }
 
   /* Scroll Reveal Animation */
-  .scroll-reveal {
+  .reveal-section {
     opacity: 0;
     transform: translateY(30px);
     transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .scroll-reveal.revealed {
+  .reveal-section.revealed {
     opacity: 1;
     transform: translateY(0);
   }

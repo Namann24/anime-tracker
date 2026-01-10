@@ -11,6 +11,7 @@ export default function Profile() {
     const { user: currentUser } = useAuth();
 
     const [user, setUser] = useState(null);
+    const { setUser: setAuthUser } = useAuth();
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({
@@ -130,7 +131,11 @@ export default function Profile() {
                 accentColor: editData.accentColor,
                 bannerUrl: editData.bannerUrl
             });
-            setUser({ ...user, ...updated, personalization: updatedPers });
+            const fullUpdatedUser = { ...user, ...updated, personalization: updatedPers };
+            setUser(fullUpdatedUser);
+            setAuthUser(fullUpdatedUser);
+            localStorage.setItem("user", JSON.stringify(fullUpdatedUser));
+
             setSaveStatus('success');
             setTimeout(() => {
                 setIsEditing(false);
@@ -144,14 +149,14 @@ export default function Profile() {
         }
     };
 
-    if (loading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center"><div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div></div>;
-    if (!user) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-red-600 text-shonen-bold text-4xl uppercase tracking-widest">Aura Not Found</div>;
+    if (loading) return <div className="min-h-screen bg-saga-bg flex items-center justify-center"><div className="w-12 h-12 border-4 border-saga-accent border-t-transparent rounded-full animate-spin"></div></div>;
+    if (!user) return <div className="min-h-screen bg-saga-bg flex items-center justify-center text-saga-accent font-shonen text-4xl uppercase tracking-widest">Aura Not Found</div>;
 
     const stats = {
         total: user.watchlist?.length || 0,
         completed: user.watchlist?.filter(i => i.status === "Completed").length || 0,
         watching: user.watchlist?.filter(i => i.status === "Watching").length || 0,
-        episodes: user.watchlist?.reduce((acc, item) => acc + (item.seasons?.reduce((sAcc, s) => sAcc + s.watchedEpisodes.length, 0) || 0), 0) || 0
+        episodes: user.watchlist?.reduce((acc, item) => acc + (item.progress || 0), 0) || 0
     };
 
     const getRankInfo = (eps) => {
@@ -178,20 +183,18 @@ export default function Profile() {
     const COLORS = ["#ff003c", "#a855f7", "#3b82f6", "#10b981", "#f59e0b"];
 
     return (
-        <div className="min-h-screen text-[#f0f0f0] pb-24 overflow-x-hidden">
+        <div className="min-h-screen text-saga-text pb-24 overflow-x-hidden bg-transparent transition-colors duration-500">
             <div className="h-80 md:h-[450px] relative overflow-hidden">
                 {user.personalization?.bannerUrl ? (
-                    <img src={user.personalization.bannerUrl} className="w-full h-full object-cover brightness-50 contrast-125" alt="" />
+                    <img src={user.personalization.bannerUrl} className="w-full h-full object-cover brightness-75 contrast-150 saturate-110 dark:brightness-50 dark:contrast-125 dark:saturate-100" alt="" />
                 ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-red-900/40 via-black to-black"></div>
+                    <div className="w-full h-full bg-gradient-to-br from-saga-accent/40 via-saga-bg to-saga-bg"></div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20"></div>
                 <div className="absolute inset-0 halftone opacity-20 pointer-events-none"></div>
                 <div className="absolute inset-0 speed-lines opacity-10 pointer-events-none"></div>
 
-                <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-8 opacity-40 blur-[1px]">
-                    <span className="text-shonen-bold text-9xl tracking-[0.5em] text-white/5 select-none">{user.username}</span>
-                </div>
+
             </div>
 
             <div className="max-w-[1200px] mx-auto px-6 -mt-32 relative z-20">
@@ -201,12 +204,17 @@ export default function Profile() {
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] border border-dashed border-red-600/20 rounded-full animate-spin-ultra-slow"></div>
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] border border-dotted border-white/10 rounded-full animate-spin-reverse-slow"></div>
 
-                            <div className="relative w-full aspect-square clip-hex p-1 bg-gradient-to-b from-red-600 via-purple-600 to-black animate-float-shatter">
-                                <div className="w-full h-full clip-hex bg-black relative overflow-hidden group">
-                                    {typeof user.profilePic === 'string' && (user.profilePic.startsWith('/') || user.profilePic.startsWith('http')) ? (
-                                        <img src={user.profilePic} className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110 group-hover:rotate-3" alt="" />
+                            <div className="relative w-full aspect-square clip-hex p-1 bg-gradient-to-b from-saga-accent via-purple-600 to-saga-bg animate-float-shatter">
+                                <div className="w-full h-full clip-hex bg-saga-bg relative overflow-hidden group">
+                                    {(typeof user.profilePic === 'string' && (user.profilePic.includes('/') || user.profilePic.startsWith('http') || user.profilePic.startsWith('data:'))) ? (
+                                        <img
+                                            src={user.profilePic}
+                                            className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110 group-hover:rotate-3"
+                                            alt=""
+                                            onError={(e) => { e.target.src = "https://placehold.co/400x400/1a1a1a/ef4444?text=Signal+Lost"; }}
+                                        />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                        <div className="w-full h-full flex items-center justify-center bg-saga-surface">
                                             <span className="text-9xl drop-shadow-[0_0_50px_rgba(255,0,60,0.5)]">{user.profilePic || '👤'}</span>
                                         </div>
                                     )}
@@ -214,17 +222,17 @@ export default function Profile() {
                                 </div>
                             </div>
 
-                            <div className={`absolute -bottom-6 left-1/2 -translate-x-1/2 px-8 py-3 bg-black border border-white/10 skew-x-[-12deg] shadow-[0_10px_40px_-10px_rgba(255,0,60,0.5)] group-hover/avatar:border-red-600 transition-colors duration-500`}>
+                            <div className={`absolute -bottom-6 left-1/2 -translate-x-1/2 px-8 py-3 bg-saga-bg border border-saga-border skew-x-[-12deg] shadow-lg group-hover/avatar:border-saga-accent transition-colors duration-500`}>
                                 <div className="skew-x-[12deg] flex flex-col items-center">
                                     <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${rank.color}`}>Current Rank</span>
-                                    <span className="text-2xl font-black text-white uppercase tracking-tighter">{rank.title}</span>
+                                    <span className="text-2xl font-black text-saga-text uppercase tracking-tighter">{rank.title}</span>
                                 </div>
                             </div>
 
                             {isOwnProfile && (
                                 <button
                                     onClick={() => setIsEditing(!isEditing)}
-                                    className="absolute top-0 right-0 p-4 bg-white/5 clip-hex hover:bg-red-600 hover:text-white transition-all backdrop-blur-md"
+                                    className="absolute top-0 right-0 p-4 bg-saga-surface clip-hex hover:bg-saga-accent hover:text-white transition-all backdrop-blur-md border border-saga-border"
                                     title="Rewrite History"
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
@@ -234,18 +242,18 @@ export default function Profile() {
 
                         <div className="flex flex-col gap-8">
                             <div className="relative">
-                                <h1 className="text-shonen-bold text-7xl md:text-9xl text-white tracking-tighter uppercase leading-[0.8] mb-4 mix-blend-screen drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                                <h1 className="font-shonen text-7xl md:text-9xl text-saga-text tracking-widest uppercase leading-[0.8] mb-4 drop-shadow-sm">
                                     {user.username}
                                 </h1>
-                                <div className="h-1 w-full bg-gradient-to-r from-red-600 to-transparent"></div>
+                                <div className="h-1 w-full bg-gradient-to-r from-saga-accent to-transparent"></div>
                                 <div className="flex justify-between items-end mt-2">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.5em] text-red-500">Subject #{Math.floor(Math.random() * 9000) + 1000}</span>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-500">Status: ASCENDED</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.5em] text-saga-accent">Subject #{Math.floor(Math.random() * 9000) + 1000}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.5em] text-saga-text-dim">Status: ASCENDED</span>
                                 </div>
                             </div>
 
-                            <div className="relative p-8 border-l-4 border-white/20 bg-gradient-to-r from-white/5 to-transparent backdrop-blur-sm">
-                                <p className="text-xl md:text-2xl text-gray-300 italic font-medium leading-relaxed">
+                            <div className="relative p-8 border-l-4 border-saga-border bg-gradient-to-r from-saga-surface to-transparent backdrop-blur-sm">
+                                <p className="text-xl md:text-2xl text-saga-text-dim italic font-medium leading-relaxed">
                                     "{user.bio || "Legend pending..."}"
                                 </p>
                             </div>
@@ -272,14 +280,14 @@ export default function Profile() {
                             </div>
 
                             <div className="space-y-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-500">Achievements</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-saga-text-dim">Achievements</h3>
                                 <div className="grid grid-cols-2 gap-4">
                                     {achievements.map(ach => (
-                                        <div key={ach.id} className={`p-4 rounded-lg flex items-center gap-4 ${ach.active ? 'bg-white/5 border border-red-600/20' : 'bg-white/5 opacity-50'}`}>
+                                        <div key={ach.id} className={`p-4 rounded-xl flex items-center gap-4 ${ach.active ? 'bg-saga-surface border border-saga-accent/20' : 'bg-saga-surface opacity-50'}`}>
                                             <span className="text-3xl">{ach.icon}</span>
                                             <div>
-                                                <p className="font-bold text-white">{ach.label}</p>
-                                                <p className="text-xs text-gray-400">{ach.desc}</p>
+                                                <p className="font-bold text-saga-text">{ach.label}</p>
+                                                <p className="text-xs text-saga-text-dim">{ach.desc}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -292,7 +300,7 @@ export default function Profile() {
                 <div className="max-w-[1400px] mx-auto px-6 relative z-20">
                     {isEditing && (
                         <div className="mb-16 animate-in slide-in-from-top-8 duration-500">
-                            <div className="saga-glass p-12 rounded-[2.5rem] border border-white/10 grid lg:grid-cols-2 gap-12">
+                            <div className="saga-glass p-12 rounded-[2.5rem] border border-saga-border grid lg:grid-cols-2 gap-12">
                                 <div className="space-y-8">
                                     <SagaInput
                                         label="Personal Biography"
@@ -300,6 +308,7 @@ export default function Profile() {
                                         placeholder="Define your legacy..."
                                         value={editData.bio}
                                         onChange={e => setEditData({ ...editData, bio: e.target.value })}
+                                        className="bg-saga-bg text-saga-text border-saga-border"
                                     />
 
                                     <div>
@@ -319,13 +328,13 @@ export default function Profile() {
 
                                 <div className="space-y-8">
                                     <div>
-                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-4">Visual Icon</label>
+                                        <label className="text-[10px] font-black text-saga-text-dim uppercase tracking-widest block mb-4">Visual Icon</label>
                                         <div className="grid grid-cols-4 gap-3">
                                             {AVATARS.map(a => (
                                                 <button
                                                     key={a}
                                                     onClick={() => setEditData({ ...editData, profilePic: a })}
-                                                    className={`aspect-square rounded-2xl bg-white/5 border-2 flex items-center justify-center transition-all ${editData.profilePic === a ? 'border-red-600 bg-red-600/10' : 'border-transparent hover:border-white/20'}`}
+                                                    className={`aspect-square rounded-2xl bg-saga-surface border-2 flex items-center justify-center transition-all ${editData.profilePic === a ? 'border-saga-accent bg-saga-accent/10' : 'border-transparent hover:border-saga-border'}`}
                                                 >
                                                     {a.startsWith('/') ? <img src={a} className="w-full h-full object-cover rounded-xl" /> : <span className="text-3xl">{a}</span>}
                                                 </button>
@@ -346,12 +355,12 @@ export default function Profile() {
 
                     <section className="mb-24">
                         <div className="flex items-center gap-6 mb-12">
-                            <div className="w-1.5 h-10 bg-red-600 rounded-full shadow-impact"></div>
-                            <h2 className="text-shonen-bold text-4xl text-white uppercase tracking-wider">Ascended Sagas</h2>
+                            <div className="w-1.5 h-10 bg-saga-accent rounded-full shadow-neon-red"></div>
+                            <h2 className="font-shonen text-4xl text-saga-text uppercase tracking-wider">Ascended Sagas</h2>
                         </div>
 
                         {favoritesDetails.length === 0 ? (
-                            <div className="p-20 text-center border-2 border-dashed border-white/5 rounded-[3rem] opacity-40 italic">
+                            <div className="p-20 text-center border-2 border-dashed border-saga-border rounded-[3rem] text-saga-text-dim opacity-40 italic">
                                 The gallery of heroes awaits entry...
                             </div>
                         ) : (
@@ -378,48 +387,48 @@ export default function Profile() {
 
                     <section>
                         <div className="flex items-center gap-6 mb-12">
-                            <div className="w-1.5 h-10 bg-red-600 rounded-full shadow-impact"></div>
-                            <h2 className="text-shonen-bold text-4xl text-white uppercase tracking-wider">Chronicle History</h2>
+                            <div className="w-1.5 h-10 bg-saga-accent rounded-full shadow-neon-red"></div>
+                            <h2 className="font-shonen text-4xl text-saga-text uppercase tracking-wider">Chronicle History</h2>
                         </div>
 
-                        <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-[3rem] overflow-hidden">
+                        <div className="bg-saga-surface backdrop-blur-xl border border-saga-border rounded-[3rem] overflow-hidden shadow-2xl">
                             {!user.watchlist || user.watchlist.length === 0 ? (
                                 <p className="p-32 text-center text-gray-600 font-bold italic tracking-wider opacity-30">"The scroll is still blank... Your legend begins now."</p>
                             ) : (
                                 <div className="divide-y divide-white/[0.03]">
                                     {user.watchlist.slice(0, 8).map((item) => {
-                                        const totalWatched = item.seasons?.reduce((acc, s) => acc + s.watchedEpisodes.length, 0) || 0;
-                                        const totalAvail = item.seasons?.reduce((acc, s) => acc + s.totalEpisodes, 0) || 0;
+                                        const totalWatched = item.progress || 0;
+                                        const totalAvail = item.totalEpisodes || 0;
                                         const progress = totalAvail > 0 ? Math.round((totalWatched / totalAvail) * 100) : 0;
                                         return (
-                                            <div key={item._id} className="p-8 flex flex-col md:flex-row items-center gap-10 hover:bg-white/[0.02] transition-all group border-b border-white/5 last:border-0 relative overflow-hidden">
-                                                <div className="absolute inset-0 bg-red-600/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 skew-x-12"></div>
-                                                <div className="w-24 h-24 clip-hex bg-gradient-to-br from-red-600 to-purple-800 p-0.5 shrink-0 group-hover:rotate-180 transition-transform duration-700">
-                                                    <div className="w-full h-full clip-hex bg-black">
+                                            <div key={item._id} className="p-8 flex flex-col md:flex-row items-center gap-10 hover:bg-saga-accent/5 transition-all group border-b border-saga-border last:border-0 relative overflow-hidden">
+                                                <div className="absolute inset-0 bg-saga-accent/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 skew-x-12"></div>
+                                                <div className="w-24 h-24 clip-hex bg-gradient-to-br from-saga-accent to-purple-800 p-0.5 shrink-0 group-hover:rotate-180 transition-transform duration-700">
+                                                    <div className="w-full h-full clip-hex bg-saga-bg">
                                                         <img src={item.bannerUrl || item.image} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" alt="" />
                                                     </div>
                                                 </div>
 
                                                 <div className="flex-1 min-w-0 text-center md:text-left relative z-10">
-                                                    <h4 className="text-white font-black text-2xl uppercase tracking-tighter mb-4 group-hover:text-red-500 transition-colors truncate">{item.title}</h4>
+                                                    <h4 className="text-saga-text font-black text-2xl uppercase tracking-tighter mb-4 group-hover:text-saga-accent transition-colors truncate">{item.title}</h4>
                                                     <div className="flex flex-wrap justify-center md:justify-start gap-6">
                                                         <div className="flex items-center gap-3">
-                                                            <span className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_8px_rgba(255,0,60,0.5)] animate-pulse"></span>
-                                                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{item.status}</span>
+                                                            <span className="w-2 h-2 rounded-full bg-saga-accent shadow-neon-red animate-pulse"></span>
+                                                            <span className="text-[10px] font-black text-saga-text-dim uppercase tracking-widest">{item.status}</span>
                                                         </div>
                                                         <div className="flex items-center gap-3">
-                                                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{totalWatched} / {totalAvail} CHAPTERS</span>
+                                                            <span className="text-[10px] font-black text-saga-text-dim uppercase tracking-widest">{totalWatched} / {totalAvail || "?"} CHAPTERS</span>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div className="relative z-10 flex flex-col items-center md:items-end gap-3 shrink-0">
-                                                    <div className="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em]">Sync Rate</div>
+                                                    <div className="text-[9px] font-black text-saga-text-dim uppercase tracking-[0.2em]">Sync Rate</div>
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-32 h-1.5 bg-white/5 skew-x-12 overflow-hidden border border-white/10">
-                                                            <div className="h-full bg-red-600 shadow-[0_0_10px_rgba(255,0,60,0.4)]" style={{ width: `${progress}%` }}></div>
+                                                        <div className="w-32 h-1.5 bg-saga-bg skew-x-12 overflow-hidden border border-saga-border">
+                                                            <div className="h-full bg-saga-accent shadow-neon-red" style={{ width: `${progress}%` }}></div>
                                                         </div>
-                                                        <span className="text-white font-black text-sm italic">{progress}%</span>
+                                                        <span className="text-saga-text font-black text-sm italic">{progress}%</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -438,11 +447,11 @@ export default function Profile() {
 function StatusCard({ label, value, highlight, color = "#ff003c" }) {
     return (
         <div
-            className={`p-6 border-l-2 transition-all hover:pl-8 group relative overflow-hidden ${highlight ? 'border-red-500 bg-red-600/5' : 'border-white/10 bg-black/40 hover:border-white/30'}`}
+            className={`p-6 border-l-2 transition-all hover:pl-8 group relative overflow-hidden ${highlight ? 'border-saga-accent bg-saga-accent/5 shadow-neon-red' : 'border-saga-border bg-saga-surface hover:border-saga-text-dim'}`}
         >
-            <div className={`absolute inset-0 bg-gradient-to-r ${highlight ? 'from-red-600/10' : 'from-white/5'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
-            <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-1 transition-colors relative z-10" style={highlight ? { color: 'rgba(255,255,255,0.8)' } : { color: '#666' }}>{label}</p>
-            <p className={`text-4xl font-black italic tracking-tighter text-white relative z-10 group-hover:scale-110 transition-transform origin-left`}>{value}</p>
+            <div className={`absolute inset-0 bg-gradient-to-r ${highlight ? 'from-saga-accent/10' : 'from-saga-text/5'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-1 transition-colors relative z-10" style={highlight ? { color: 'var(--saga-text)' } : { color: 'var(--saga-text-dim)' }}>{label}</p>
+            <p className={`text-4xl font-black italic tracking-tighter text-saga-text relative z-10 group-hover:scale-110 transition-transform origin-left`}>{value}</p>
         </div>
     );
 }

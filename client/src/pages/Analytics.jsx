@@ -58,7 +58,8 @@ export default function Analytics() {
   const totalAnime = watchlist.length;
 
   const totalEpisodesWatched = watchlist.reduce((acc, curr) => {
-    const seasonEps = curr.seasons.reduce((sAcc, s) => sAcc + s.watchedEpisodes.length, 0);
+    const seasons = curr.seasons || [];
+    const seasonEps = seasons.reduce((sAcc, s) => sAcc + (s.watchedEpisodes?.length || 0), 0);
     return acc + seasonEps;
   }, 0);
 

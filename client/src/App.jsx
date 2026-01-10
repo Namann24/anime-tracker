@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import DynamicBackground from "./components/effects/DynamicBackground";
 import Navbar from "./components/common/Navbar";
+import TacticalOverlay from "./components/common/TacticalOverlay";
 import PageTransition from "./components/common/PageTransition";
 import CommandPalette from "./components/common/CommandPalette";
 import { Toaster } from "react-hot-toast";
@@ -25,24 +26,10 @@ import Leaderboard from "./pages/Leaderboard";
 export default function App() {
   const location = useLocation();
 
-  // Determine background variant based on route
-  const getBackgroundVariant = () => {
-    const path = location.pathname;
-    if (path === "/") return "supreme"; // Fire Nebula
-    if (path.startsWith("/admin")) return "grid";
-    if (path.startsWith("/profile")) return "legendary"; // Golden Legacy
-    if (path.startsWith("/search")) return "interactive";
-    if (path.startsWith("/leaderboard")) return "supreme";
-    if (path.startsWith("/about") || path.startsWith("/clubs")) return "mesh";
-    if (path.startsWith("/watchlist")) return "particles"; // Drifting Embers
-    if (path.startsWith("/schedule")) return "tactical"; // New variant for schedule
-    if (path.startsWith("/dashboard")) return "tactical";
-    return "particles"; // Default
-  };
-
   return (
     <>
-      <DynamicBackground variant={getBackgroundVariant()} />
+      <DynamicBackground />
+      <TacticalOverlay />
       <Navbar />
       <CommandPalette />
       <PageTransition>

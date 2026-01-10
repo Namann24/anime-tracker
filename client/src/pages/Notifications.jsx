@@ -79,7 +79,7 @@ export default function Notifications() {
     );
 
     return (
-        <div className="min-h-screen saga-cosmic-bg text-[var(--saga-text)] pb-24 pt-32 px-6">
+        <div className="min-h-screen saga-cosmic-bg text-[var(--saga-text)] pb-24 pt-32 px-6 transition-colors duration-500">
             <div className="max-w-5xl mx-auto">
                 {/* HEADER */}
                 <div className="mb-16">
@@ -117,8 +117,8 @@ export default function Notifications() {
                             key={tab.id}
                             onClick={() => setFilter(tab.id)}
                             className={`px-6 py-3 rounded-xl border font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap ${filter === tab.id
-                                    ? "bg-red-600 border-red-600 text-white shadow-[0_0_20px_rgba(255,0,60,0.3)]"
-                                    : "bg-white/5 border-white/10 text-gray-500 hover:border-red-600/30"
+                                ? "bg-red-600 border-red-600 text-white shadow-[0_0_20px_rgba(255,0,60,0.3)]"
+                                : "bg-white/5 border-white/10 text-gray-500 hover:border-red-600/30"
                                 }`}
                         >
                             <span className="mr-2">{tab.icon}</span>
@@ -142,8 +142,8 @@ export default function Notifications() {
                             <div
                                 key={n._id}
                                 className={`saga-glass border rounded-2xl p-6 transition-all duration-300 group relative overflow-hidden ${n.isRead
-                                        ? 'border-white/5 opacity-60'
-                                        : 'border-red-600/20 shadow-[0_0_30px_rgba(255,0,60,0.1)]'
+                                    ? 'border-white/5 opacity-60'
+                                    : 'border-red-600/20 shadow-[0_0_30px_rgba(255,0,60,0.1)]'
                                     }`}
                             >
                                 {/* Glow Effect for Unread */}
@@ -154,8 +154,8 @@ export default function Notifications() {
                                 <div className="relative z-10 flex items-start gap-6">
                                     {/* Icon */}
                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-transform group-hover:scale-110 ${n.type === 'reminder' ? 'bg-orange-600/20' :
-                                            n.type === 'episode' ? 'bg-red-600/20' :
-                                                'bg-blue-600/20'
+                                        n.type === 'episode' ? 'bg-red-600/20' :
+                                            'bg-blue-600/20'
                                         }`}>
                                         {n.type === 'reminder' ? '🔔' : n.type === 'episode' ? '📺' : '⚙️'}
                                     </div>
@@ -165,8 +165,8 @@ export default function Notifications() {
                                         <div className="flex items-start justify-between gap-4 mb-3">
                                             <div>
                                                 <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${n.type === 'reminder' ? 'text-orange-500' :
-                                                        n.type === 'episode' ? 'text-red-500' :
-                                                            'text-blue-500'
+                                                    n.type === 'episode' ? 'text-red-500' :
+                                                        'text-blue-500'
                                                     }`}>
                                                     {n.type === 'reminder' ? 'Tactical Reminder' : n.type === 'episode' ? 'Episode Alert' : 'System Sync'}
                                                 </span>

@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { getWatchlist, addWatchlist, deleteWatchlist } from "../services/watchlistService";
 import { useAuth } from "./AuthContext";
-import toast from "react-hot-toast";
+import { useToast } from "./ToastContext";
 
 const WatchlistContext = createContext();
 
@@ -9,6 +9,7 @@ export const useWatchlist = () => useContext(WatchlistContext);
 
 export const WatchlistProvider = ({ children }) => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [watchlist, setWatchlist] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showSpoilers, setShowSpoilers] = useState(() => {
@@ -55,7 +56,7 @@ export const WatchlistProvider = ({ children }) => {
 
   const addToWatchlist = async (anime) => {
     if (!user) {
-      toast.error("Login to track your saga");
+      showToast("Login to track your saga", "error");
       return;
     }
 
@@ -74,7 +75,7 @@ export const WatchlistProvider = ({ children }) => {
 
     const prevWatchlist = [...watchlist];
     setWatchlist(prev => [optimisticItem, ...prev]);
-    toast.success("Added to Chronicles", { icon: '📜' });
+    showToast("Added to Chronicles", "success");
 
     // 2. API Call
     try {
@@ -89,7 +90,7 @@ export const WatchlistProvider = ({ children }) => {
     } catch (err) {
       // 4. Rollback
       setWatchlist(prevWatchlist);
-      toast.error("Failed to update archives");
+      showToast("Failed to update archives", "error");
     }
   };
 
@@ -99,8 +100,9 @@ export const WatchlistProvider = ({ children }) => {
     const item = watchlist.find(i => i._id === id || i.mal_id === id); // Handle both DB ID and MAL ID check if needed
 
     // 2. Optimistic Update
+    // 2. Optimistic Update
     setWatchlist(prev => prev.filter(i => i._id !== id));
-    toast.success("Removed from Chronicles", { icon: '🗑️' });
+    showToast("Removed from Chronicles", "success");
 
     // 3. API Call
     try {
@@ -108,7 +110,7 @@ export const WatchlistProvider = ({ children }) => {
     } catch (err) {
       // 4. Rollback
       setWatchlist(prevWatchlist);
-      toast.error("Failed to delete");
+      showToast("Failed to delete", "error");
     }
   };
 

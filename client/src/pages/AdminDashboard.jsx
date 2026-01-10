@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import UserAvatar from "../components/common/UserAvatar";
 import {
     toggleBanUser,
     deleteUser,
@@ -201,7 +202,7 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div className="flex h-screen bg-[var(--saga-background)] text-[var(--saga-text)] font-sans overflow-hidden selection:bg-red-500/30 selection:text-red-200">
+        <div className="flex h-screen bg-transparent text-[var(--saga-text)] font-sans overflow-hidden selection:bg-red-500/30 selection:text-red-200 transition-colors duration-500">
 
             {/* TACTICAL SIDEBAR */}
             <aside className="w-64 bg-[var(--saga-surface)]/90 backdrop-blur-xl border-r border-[var(--saga-border)] hidden md:flex flex-col relative z-30 shadow-2xl">
@@ -234,7 +235,7 @@ export default function AdminDashboard() {
             </aside>
 
             {/* MAIN INTERFACE */}
-            <main className="flex-1 overflow-y-auto h-full relative bg-tactical-grid">
+            <main className="flex-1 overflow-y-auto h-full relative bg-transparent">
                 <div className="absolute inset-0 halftone opacity-[0.03] pointer-events-none pointer-events-none"></div>
 
                 {/* HEADER */}
@@ -260,21 +261,8 @@ export default function AdminDashboard() {
                                 <p className="text-xs font-bold text-[var(--saga-text)] leading-none tracking-wide">{user?.username}</p>
                                 <p className="text-[9px] text-red-500 uppercase tracking-widest leading-none mt-1">Commander</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full border border-red-500/50 p-0.5 relative group cursor-pointer hover:border-red-500 transition-colors shadow-neon-red">
-                                {user?.profilePic ? (
-                                    <img
-                                        src={user.profilePic}
-                                        className="w-full h-full rounded-full object-cover"
-                                        alt="Admin"
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                            e.target.nextSibling.style.display = 'flex';
-                                        }}
-                                    />
-                                ) : null}
-                                <div className={`w-full h-full flex items-center justify-center bg-red-500/10 rounded-full text-lg font-bold select-none text-red-500 ${user?.profilePic ? 'hidden' : 'flex'}`}>
-                                    {user?.username?.charAt(0).toUpperCase()}
-                                </div>
+                            <div className="w-10 h-10 rounded-full border border-red-500/50 p-0.5 relative group cursor-pointer hover:border-red-500 transition-colors shadow-neon-red flex items-center justify-center bg-[var(--saga-surface)]">
+                                <UserAvatar src={user?.profilePic} username={user?.username} className="w-full h-full rounded-full" size="md" />
                                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-black rounded-full shadow-[0_0_5px_#22c55e]"></div>
                             </div>
                         </div>
@@ -456,8 +444,7 @@ function UserManagement({ users, setUsers, isLoading, onBan, onDelete }) {
                             <tr key={user._id} className="hover:bg-[var(--saga-surface-hover)] transition-colors group">
                                 <td className="p-4 flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-full bg-[var(--saga-surface-hover)] border border-[var(--saga-border)] flex items-center justify-center font-bold text-[var(--saga-text-dim)] text-xs overflow-hidden">
-                                        {user.profilePic ? <img src={user.profilePic} className="w-full h-full object-cover" alt="" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} /> : null}
-                                        <span className={user.profilePic ? 'hidden' : 'flex'}>{user.username.charAt(0)}</span>
+                                        <UserAvatar src={user.profilePic} username={user.username} className="w-full h-full" />
                                     </div>
                                     <span className="font-bold text-[var(--saga-text)]">{user.username}</span>
                                 </td>

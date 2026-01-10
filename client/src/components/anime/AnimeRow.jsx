@@ -42,8 +42,8 @@ export default function AnimeRow({ title, items, icon }) {
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
                     <div className="w-1.5 h-10 bg-red-600 rounded-full shadow-[0_0_15px_rgba(255,0,60,0.5)]"></div>
-                    <h2 className="text-shonen-bold text-3xl md:text-4xl text-white uppercase tracking-wider flex items-center gap-4">
-                        {icon && <span className="text-2xl opacity-80">{icon}</span>}
+                    <h2 className="font-shonen text-3xl md:text-4xl text-saga-text uppercase tracking-wider flex items-center gap-4">
+                        {icon && <span className="flex items-center justify-center">{icon}</span>}
                         {title}
                     </h2>
                 </div>
@@ -51,9 +51,9 @@ export default function AnimeRow({ title, items, icon }) {
                     <button
                         onClick={() => scroll('left')}
                         disabled={!canScrollLeft}
-                        className={`w-12 h-12 flex items-center justify-center rounded-xl border border-white/10 transition-all duration-300 active:scale-90 ${canScrollLeft
-                            ? "bg-white/5 text-white hover:bg-red-600 hover:border-red-600 hover:shadow-[0_0_20px_rgba(255,0,60,0.4)]"
-                            : "bg-white/5 text-gray-700 opacity-20 cursor-not-allowed"
+                        className={`w-12 h-12 flex items-center justify-center rounded-xl border border-saga-border transition-all duration-300 active:scale-90 ${canScrollLeft
+                            ? "bg-saga-surface text-saga-text hover:bg-saga-accent hover:text-white hover:border-saga-accent hover:shadow-neon-red"
+                            : "bg-saga-surface text-saga-text-dim opacity-20 cursor-not-allowed"
                             }`}
                         aria-label="Scroll left"
                     >
@@ -62,9 +62,9 @@ export default function AnimeRow({ title, items, icon }) {
                     <button
                         onClick={() => scroll('right')}
                         disabled={!canScrollRight}
-                        className={`w-12 h-12 flex items-center justify-center rounded-xl border border-white/10 transition-all duration-300 active:scale-90 ${canScrollRight
-                            ? "bg-white/5 text-white hover:bg-red-600 hover:border-red-600 hover:shadow-[0_0_20px_rgba(255,0,60,0.4)]"
-                            : "bg-white/5 text-gray-700 opacity-20 cursor-not-allowed"
+                        className={`w-12 h-12 flex items-center justify-center rounded-xl border border-saga-border transition-all duration-300 active:scale-90 ${canScrollRight
+                            ? "bg-saga-surface text-saga-text hover:bg-saga-accent hover:text-white hover:border-saga-accent hover:shadow-neon-red"
+                            : "bg-saga-surface text-saga-text-dim opacity-20 cursor-not-allowed"
                             }`}
                         aria-label="Scroll right"
                     >
@@ -88,7 +88,7 @@ export default function AnimeRow({ title, items, icon }) {
                         <Link
                             to={`/anime/${anime.mal_id}`}
                             key={anime.mal_id}
-                            className="min-w-[240px] md:min-w-[280px] snap-start group relative rounded-2xl bg-[#121212] overflow-hidden transition-all duration-500 hover:-translate-y-4 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)]"
+                            className="min-w-[240px] md:min-w-[280px] snap-start group relative rounded-2xl bg-saga-surface border border-saga-border overflow-hidden transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl"
                         >
                             {/* Halftone Overlay on Hover */}
                             <div className="absolute inset-0 halftone opacity-0 group-hover:opacity-10 pointer-events-none z-30 transition-opacity"></div>
@@ -126,14 +126,14 @@ export default function AnimeRow({ title, items, icon }) {
                                 <div className="absolute inset-0 border-2 border-red-600/0 group-hover:border-red-600/50 rounded-2xl z-40 transition-all duration-500"></div>
 
                                 {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/20 to-transparent z-10 transition-opacity opacity-80 group-hover:opacity-100"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 transition-opacity opacity-80 group-hover:opacity-100"></div>
 
                                 {/* Content */}
                                 <div className={`absolute inset-x-0 bottom-0 p-6 z-20 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500 ${isHidden ? 'opacity-0' : 'opacity-100'}`}>
                                     <div className="text-[9px] font-black text-red-500 uppercase tracking-[0.2em] mb-2">
                                         {anime.type} • {anime.status}
                                     </div>
-                                    <h3 className="text-white font-black text-xl leading-tight line-clamp-2 transition-colors drop-shadow-xl">
+                                    <h3 className="text-white font-black text-xl leading-tight line-clamp-2 transition-colors drop-shadow-xl group-hover:text-saga-accent">
                                         {anime.title}
                                     </h3>
                                     <div className="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">

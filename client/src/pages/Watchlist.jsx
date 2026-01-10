@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import {
+
   getWatchlist,
-  addWatchlist,
-  deleteWatchlist,
   updateWatchStatus,
   toggleEpisode,
   updateWatchlistDetails,
@@ -44,8 +43,8 @@ export default function Watchlist() {
     watchlist,
     loading: watchlistLoading,
     updateLocalWatchlist,
-    addToLocalWatchlist,
-    removeFromLocalWatchlist,
+    addToWatchlist,
+    removeFromWatchlist,
     showSpoilers,
     setShowSpoilers
   } = useWatchlist();
@@ -97,40 +96,21 @@ export default function Watchlist() {
     try {
       const totalEpisodes = anime.episodes || 12;
       const totalSeasons = 1; // Default to 1, let user adjust
-
-      const image =
-        anime.images?.jpg?.large_image_url ||
-        anime.images?.jpg?.image_url;
-
-      const genres = anime.genres?.map(g => g.name) || [];
-      const score = anime.score || 0;
-
-      const res = await addWatchlist({
-        title: anime.title,
-        image,
-        mal_id: anime.mal_id,
-        genres,
-        score,
-        totalSeasons,
-        episodesPerSeason: totalEpisodes,
+      addToWatchlist({
+        ...anime,
+        episodes: anime.episodes // Ensure episodes are passed
       });
-
-      addToLocalWatchlist(res.data);
       setResults([]);
       setQuery("");
-      showToast(`Saga added to Chronicles: ${anime.title}`, 'success');
     } catch (error) {
       console.error("Failed to add anime", error);
-      const msg = error.response?.data?.message || "Unable to record saga. Archive limited.";
-      showToast(msg, 'error');
     } finally {
       setIsAdding(null);
     }
   };
 
   const handleRemove = async (id) => {
-    await deleteWatchlist(id);
-    removeFromLocalWatchlist(id);
+    await removeFromWatchlist(id);
   };
 
   const handleStatus = async (id, status) => {
@@ -219,7 +199,7 @@ export default function Watchlist() {
   };
 
   return (
-    <div className="min-h-screen text-[var(--saga-text)] pb-20 overflow-x-hidden transition-colors">
+    <div className="min-h-screen text-[var(--saga-text)] pb-20 overflow-x-hidden transition-colors duration-500">
       <div className="max-w-[1400px] mx-auto px-6">
 
         {/* COMMAND HEADER */}
@@ -231,7 +211,7 @@ export default function Watchlist() {
               Live Tracking Interface
             </div>
             <h1 className="text-shonen-bold text-5xl md:text-7xl lg:text-8xl mb-2 leading-none animate-in fade-in slide-in-from-left-8 duration-700 delay-100">
-              COMMAND <span className="text-red-600">CHRONICLES.</span>
+              COMMAND <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-glow">CHRONICLES.</span>
             </h1>
             <p className="text-sm text-gray-500 font-medium italic animate-in fade-in slide-in-from-left-12 duration-700 delay-200">
               "Every episode watched is a chapter carved into your legend."
@@ -247,15 +227,23 @@ export default function Watchlist() {
 
         {/* SEARCH & FILTERS */}
         <div className="grid lg:grid-cols-12 gap-6 mb-12 items-start">
-          <div className="lg:col-span-8 relative z-50">
-            <SagaInput
-              placeholder="Search for new sagas to track..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="!bg-[var(--saga-glass-bg)]"
-              icon={<svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>}
-            />
+          <div className="lg:col-span-8 relative z-30">
+            <div className="flex-1 w-full bg-transparent flex items-center h-16 group relative mb-4">
+              {/* Underline Effect */}
+              <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[var(--saga-text-dim)]/20 group-focus-within:bg-red-600 transition-colors duration-500"></div>
+              <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-red-600 group-focus-within:w-full transition-all duration-700 ease-out"></div>
+
+              <div className="text-red-500/50 mr-4 group-focus-within:text-red-500 transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              </div>
+              <input
+                placeholder="Search for new sagas to track..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="w-full bg-transparent text-xl font-light text-[var(--saga-text)] placeholder-[var(--saga-text-dim)]/50 outline-none tracking-wide font-sans translate-y-[-2px]"
+              />
+            </div>
 
             {results.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-3 saga-glass border border-[var(--saga-border)] rounded-2xl shadow-2xl p-2 max-h-[350px] overflow-y-auto z-50 animate-in fade-in zoom-in-95 duration-200 no-scrollbar">

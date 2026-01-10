@@ -35,17 +35,17 @@ const SagaSelect = ({
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={`
-          w-full saga-glass border border-white/10 rounded-xl px-4 py-3 flex items-center justify-between transition-all
-          group hover:border-red-600/50 hover:shadow-[0_0_15px_rgba(255,0,60,0.1)]
-          ${isOpen ? 'border-red-600/50 shadow-[0_0_20px_rgba(255,0,60,0.2)]' : ''}
+          w-full saga-glass border border-saga-border rounded-xl px-4 py-3 flex items-center justify-between transition-all
+          group hover:border-saga-accent/50 hover:shadow-neon-red
+          ${isOpen ? 'border-saga-accent/50 shadow-neon-red' : ''}
         `}
             >
-                <span className={`text-sm ${selectedOption ? 'text-white' : 'text-gray-500'}`}>
+                <span className={`text-sm font-bold ${selectedOption ? 'text-saga-text' : 'text-saga-text-dim'}`}>
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
 
                 <svg
-                    className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-red-500' : ''}`}
+                    className={`w-4 h-4 text-saga-text-dim transition-transform duration-300 ${isOpen ? 'rotate-180 text-saga-accent' : ''}`}
                     fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
@@ -53,7 +53,7 @@ const SagaSelect = ({
             </button>
 
             {isOpen && (
-                <div className="absolute top-[calc(100%+8px)] left-0 min-w-[200px] w-full z-[100] bg-[var(--saga-surface)] border border-[var(--saga-border)] rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2 origin-top duration-200">
+                <div className="absolute top-[calc(100%+8px)] left-0 min-w-[200px] w-full z-[100] bg-saga-surface/95 backdrop-blur-3xl border border-saga-border rounded-2xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2 origin-top duration-200">
                     {/* Decorative Manga Accent */}
                     <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-red-600 z-20 pointer-events-none"></div>
 
@@ -69,8 +69,8 @@ const SagaSelect = ({
                                 }}
                                 className={`
                                   w-full px-5 py-3 text-[10px] font-black uppercase tracking-widest text-left transition-all flex items-center justify-between
-                                  hover:bg-red-600/10 hover:text-red-500
-                                  ${value === option.value ? 'bg-red-600/20 text-red-500' : 'text-gray-300'}
+                                  hover:bg-saga-accent/10 hover:text-saga-accent
+                                  ${value === option.value ? 'bg-saga-accent/20 text-saga-accent' : 'text-saga-text'}
                                 `}
                             >
                                 {option.label}

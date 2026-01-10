@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useWatchlist } from "../context/WatchlistContext";
 import { getReviews, postReview } from "../services/reviewService";
-import { addWatchlist, deleteWatchlist } from "../services/watchlistService";
+
 import { createNotification } from "../services/notificationService";
 import { useToast } from "../context/ToastContext";
 import { useNotifications } from "../context/NotificationContext";
@@ -13,7 +13,7 @@ import SagaButton from "../components/common/SagaButton";
 export default function AnimeDetails() {
     const { id } = useParams();
     const { user } = useAuth();
-    const { watchlist, showSpoilers, addToLocalWatchlist, removeFromLocalWatchlist } = useWatchlist();
+    const { watchlist, showSpoilers, addToWatchlist, removeFromWatchlist } = useWatchlist();
     const { showToast } = useToast();
     const { refreshNotifications } = useNotifications();
 
@@ -86,20 +86,17 @@ export default function AnimeDetails() {
         setWatchlistPending(true);
         try {
             if (isInWatchlist) {
-                await deleteWatchlist(isInWatchlist._id);
-                removeFromLocalWatchlist(isInWatchlist._id);
+                await removeFromWatchlist(isInWatchlist._id);
                 showToast("Removed from chronicles", "success");
             } else {
-                const animeData = {
+                await addToWatchlist({
                     mal_id: anime.mal_id,
                     title: anime.title,
-                    image: anime.images.jpg.large_image_url,
+                    images: anime.images,
                     status: "Watching",
                     episodes: anime.episodes || 0,
-                    genres: anime.genres?.map(g => g.name) || []
-                };
-                const res = await addWatchlist(animeData);
-                addToLocalWatchlist(res.data);
+                    genres: anime.genres
+                });
                 showToast("Added to chronicles!", "success");
             }
         } catch (err) {
@@ -285,7 +282,7 @@ export default function AnimeDetails() {
                         >
                             {tab}
                             {activeTab === tab && (
-                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-red-600 shadow-neon-red animate-in fade-in duration-500"></div>
+                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-red-600 shadow-neon-red animate-in fade-in duration-300"></div>
                             )}
                         </button>
                     ))}
