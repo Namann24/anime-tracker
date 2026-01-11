@@ -15,7 +15,7 @@ export default function SagaSkeleton({ type = 'card', className = '' }) {
 
     if (type === 'hero') {
         return (
-            <div className={`h-[400px] w-full bg-saga-surface rounded-3xl border border-saga-border relative overflow-hidden ${className}`}>
+            <div className={`h-full min-h-[400px] w-full bg-saga-surface rounded-3xl border border-saga-border relative overflow-hidden ${className}`}>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-saga-surface-hover to-transparent -translate-x-full animate-shimmer"></div>
                 <div className="absolute bottom-12 left-12 space-y-4">
                     <div className="h-4 w-32 bg-saga-surface-hover rounded-full"></div>

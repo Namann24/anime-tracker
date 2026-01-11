@@ -167,7 +167,7 @@ export default function Search() {
     };
 
     const handleToggleWatchlist = async (anime) => {
-        if (!user) return;
+        if (!user || addingId === anime.mal_id) return;
         const isUpcoming = anime.status?.toLowerCase().includes("not yet") || anime.status?.toLowerCase().includes("upcoming");
 
         if (isUpcoming) {
@@ -239,7 +239,7 @@ export default function Search() {
     const isInWatchlist = (malId) => watchlist.some(a => a.mal_id === malId);
 
     return (
-        <div className="min-h-screen pb-24 overflow-x-hidden transition-colors duration-500">
+        <div className="min-h-screen pb-24 overflow-x-hidden transition-colors duration-500 saga-animate-in">
             {/* SEARCH HERO */}
             <div className="pt-32 pb-20 relative border-b border-[var(--saga-border)] z-[20]">
                 {/* Background FX */}
@@ -349,7 +349,7 @@ export default function Search() {
                                         </div>
                                     </div>
                                 )}
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 lg:gap-8">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 lg:gap-8 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300 fill-mode-backwards">
                                     {results.map((anime, idx) => {
                                         const isNSFW = anime.rating?.includes('Rx') || (anime.rating?.includes('R+') && !anime.rating?.includes('mild'));
                                         const isHidden = isNSFW && !showNSFW;

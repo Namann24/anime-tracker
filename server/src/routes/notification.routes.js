@@ -9,17 +9,21 @@ router.post("/", protect, async (req, res) => {
     try {
         const { type, message, link, animeId } = req.body;
 
-        // Check for duplicate reminder if animeId is provided
-        if (type === 'reminder' && animeId) {
+        // Check for duplicate reminder/episode if animeId is provided
+        if (animeId && (type === 'reminder' || type === 'episode')) {
+            const startOfDay = new Date();
+            startOfDay.setHours(0, 0, 0, 0);
+
             const existing = await Notification.findOne({
                 user: req.user.id,
-                type: 'reminder',
-                animeId: animeId
+                type,
+                animeId,
+                createdAt: { $gte: startOfDay }
             });
 
             if (existing) {
                 return res.status(400).json({
-                    message: "Reminder already exists for this anime",
+                    message: `${type === 'reminder' ? 'Reminder' : 'Episode alert'} already exists for today`,
                     exists: true
                 });
             }
@@ -63,6 +67,19 @@ router.put("/:id/read", protect, async (req, res) => {
     }
 });
 
+// Mark all as read
+router.put("/read-all", protect, async (req, res) => {
+    try {
+        await Notification.updateMany(
+            { user: req.user.id, isRead: false },
+            { isRead: true }
+        );
+        res.json({ message: "All marked as read" });
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 // Check if reminder exists for anime
 router.get("/check/:animeId", protect, async (req, res) => {
     try {
@@ -86,6 +103,19 @@ router.delete("/reminder/:animeId", protect, async (req, res) => {
             animeId: req.params.animeId
         });
         res.json({ message: "Reminder removed" });
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// Delete individual notification
+router.delete("/:id", protect, async (req, res) => {
+    try {
+        await Notification.findOneAndDelete({
+            _id: req.params.id,
+            user: req.user.id
+        });
+        res.json({ message: "Notification removed" });
     } catch (err) {
         res.status(500).json({ message: "Server error" });
     }

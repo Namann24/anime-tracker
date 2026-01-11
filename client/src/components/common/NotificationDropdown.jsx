@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { useNotifications } from "../../context/NotificationContext";
 
 export default function NotificationDropdown({ onClose }) {
-    const { notifications, markSingleAsRead } = useNotifications();
+    const { notifications, markSingleAsRead, markAllRead, removeNotification } = useNotifications();
     const recent = notifications.slice(0, 5);
     const dropdownRef = useRef(null);
 
@@ -40,13 +40,26 @@ export default function NotificationDropdown({ onClose }) {
                     <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
                     <h3 className="text-shonen-bold text-lg uppercase tracking-widest text-[var(--saga-text)]">Tactical Alerts</h3>
                 </div>
-                <Link
-                    to="/notifications"
-                    onClick={onClose}
-                    className="text-[10px] font-black text-red-600 hover:text-white transition-colors uppercase tracking-widest"
-                >
-                    View Archive
-                </Link>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            markAllRead();
+                        }}
+                        className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[8px] font-black text-[var(--saga-text-dim)] hover:text-white hover:border-red-600/50 hover:bg-red-600/5 transition-all uppercase tracking-[0.2em] flex items-center gap-2 group/markall"
+                    >
+                        <span className="w-1 h-1 rounded-full bg-gray-500 group-hover/markall:bg-red-500 transition-colors"></span>
+                        Mark All Read
+                    </button>
+                    <Link
+                        to="/notifications"
+                        onClick={onClose}
+                        className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-[10px] text-red-600 hover:text-white hover:border-red-600 transition-all"
+                        title="View Archive"
+                    >
+                        📂
+                    </Link>
+                </div>
             </div>
 
             <div className="max-h-[400px] overflow-y-auto no-scrollbar">
@@ -76,15 +89,30 @@ export default function NotificationDropdown({ onClose }) {
                                         {!n.isRead && <span className="w-1 h-1 rounded-full bg-red-600 animate-ping"></span>}
                                     </div>
                                 </div>
-                                {!n.isRead && (
+                                {!n.isRead ? (
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault();
+                                            e.stopPropagation();
                                             markSingleAsRead(n._id);
                                         }}
-                                        className="w-2 h-2 bg-red-600 rounded-full mt-2"
+                                        className="w-5 h-5 flex items-center justify-center rounded-full bg-red-600/10 hover:bg-red-600/20 text-red-600 transition-all border border-red-600/20 z-20 relative"
                                         title="Mark as read"
-                                    ></button>
+                                    >
+                                        <div className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse shadow-neon-red"></div>
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            removeNotification(n._id);
+                                        }}
+                                        className="w-5 h-5 flex items-center justify-center rounded-full bg-white/5 hover:bg-red-600/20 text-gray-500 hover:text-red-500 transition-all border border-white/10 z-20 relative opacity-0 group-hover:opacity-100"
+                                        title="Delete alert"
+                                    >
+                                        <span className="text-[10px]">✕</span>
+                                    </button>
                                 )}
                             </div>
                             <Link

@@ -55,7 +55,7 @@ export default function Navbar() {
         {user && (
           <div className="hidden lg:flex items-center gap-1">
             <NavLinkMini to="/dashboard" active={isActive("/dashboard")}>CMD</NavLinkMini>
-            <NavLinkMini to="/schedule" active={isActive("/schedule")}>Temporal</NavLinkMini>
+            <NavLinkMini to="/schedule" active={isActive("/schedule")}>Temporal Grid</NavLinkMini>
             <NavLinkMini to="/watchlist" active={isActive("/watchlist")}>Chronicles</NavLinkMini>
             <NavLinkMini to="/analytics" active={isActive("/analytics")}>Insight</NavLinkMini>
           </div>
@@ -70,8 +70,14 @@ export default function Navbar() {
 
                 {/* Admin Quick Entry */}
                 {user.role === 'admin' && (
-                  <Link to="/admin" className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors ${isActive("/admin") ? 'text-red-500' : 'text-saga-text-dim hover:text-red-500'}`}>
-                    Admin
+                  <Link to="/admin" className="group/admin relative px-2 py-1">
+                    <span className={`text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-300 flex items-center gap-2 ${isActive("/admin") ? 'text-red-500' : 'text-red-600 group-hover/admin:text-red-500'}`}>
+                      <span className={`w-1 h-1 rounded-full bg-red-600 ${isActive("/admin") ? 'animate-pulse' : 'opacity-100'}`}></span>
+                      Overwatch
+                    </span>
+                    {isActive("/admin") && (
+                      <div className="absolute inset-0 bg-red-600/5 blur-md rounded-lg -z-10"></div>
+                    )}
                   </Link>
                 )}
 
@@ -91,10 +97,24 @@ export default function Navbar() {
                   )}
                 </div>
 
-                {/* Theme Toggle */}
-                <button onClick={toggleTheme} className="p-1 text-saga-text-dim hover:text-yellow-400 transition-colors">
-                  <span className="text-sm">{theme === 'dark' ? '☾' : '☼'}</span>
-                </button>
+                {/* Theme & NSFW - Tactical Console */}
+                <div className="flex items-center gap-1 px-1.5 py-1 bg-white/[0.03] rounded-full border border-white/5 mx-1 transition-all duration-500 hover:border-white/10 hover:bg-white/[0.05]">
+                  <button
+                    onClick={toggleTheme}
+                    className={`w-7 h-7 flex items-center justify-center rounded-full transition-all duration-500 ${theme === 'dark' ? 'text-saga-text-dim hover:text-yellow-400' : 'text-yellow-500 bg-yellow-500/10 shadow-[0_0_10px_rgba(234,179,8,0.2)]'}`}
+                    title="Toggle Theme"
+                  >
+                    <span className="text-xs">{theme === 'dark' ? '☾' : '☼'}</span>
+                  </button>
+                  <div className="w-[1px] h-3 bg-white/10 mx-0.5"></div>
+                  <button
+                    onClick={() => setShowNSFW(!showNSFW)}
+                    className={`w-9 h-7 flex items-center justify-center text-[8px] font-black transition-all rounded-full ${showNSFW ? 'text-red-500 bg-red-500/10 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'text-saga-text-dim hover:text-white'}`}
+                    title="Toggle NSFW Content"
+                  >
+                    18+
+                  </button>
+                </div>
               </div>
 
               {/* User Identity */}
@@ -105,7 +125,7 @@ export default function Navbar() {
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-white/40 uppercase tracking-widest leading-none group-hover/profile:text-white transition-colors">{user.username}</span>
+                  <span className="text-[9px] font-black text-[var(--saga-text-dim)] opacity-60 uppercase tracking-widest leading-none group-hover/profile:text-[var(--saga-text)] group-hover/profile:opacity-100 transition-colors">{user.username}</span>
                   <div className="h-[1px] w-0 bg-red-600 group-hover/profile:w-full transition-all duration-500 mt-1"></div>
                 </div>
               </Link>
@@ -132,16 +152,26 @@ function DockLink({ to, children, active }) {
       className={`
         relative px-4 py-2 transition-all duration-500
         text-[10px] font-black uppercase tracking-[0.25em]
-        ${active ? 'text-white' : 'text-saga-text-dim hover:text-white'}
+        ${active ? 'text-[var(--saga-text)]' : 'text-saga-text-dim hover:text-[var(--saga-text)]'}
       `}
     >
-      <span className="relative z-10">{children}</span>
-      {active && (
-        <>
-          <div className="absolute inset-0 bg-gradient-to-b from-red-600/20 to-transparent blur-md -z-10 animate-pulse"></div>
-          <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-red-600 shadow-[0_0_10px_rgba(220,38,38,1)]"></div>
-        </>
-      )}
+      <div className="relative flex flex-col items-center group/link">
+        {/* Negative margin on span to compensate for trailing tracking space */}
+        <span className="relative z-10 mr-[-0.25em] transition-transform duration-500 group-hover/link:scale-110">{children}</span>
+
+        {/* Smooth Indicator */}
+        <div className={`
+          absolute bottom-[-10px] h-[2px] transition-all duration-500 ease-out
+          ${active
+            ? 'w-[70%] bg-red-600 shadow-[0_0_15px_rgba(255,0,0,0.8)] opacity-100 scale-x-100'
+            : 'w-0 bg-white/20 opacity-0 scale-x-0 group-hover/link:w-[40%] group-hover/link:opacity-50 group-hover/link:scale-x-100'}
+        `}></div>
+
+        {/* Glow Pulse */}
+        {active && (
+          <div className="absolute inset-x-[-10px] bottom-[-15px] h-10 bg-red-600/10 blur-2xl -z-10 animate-pulse pointer-events-none"></div>
+        )}
+      </div>
     </Link>
   );
 }
@@ -150,12 +180,20 @@ function NavLinkMini({ to, children, active }) {
   return (
     <Link
       to={to}
-      className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest transition-all ${active
+      className={`relative px-3 py-1 text-[9px] font-black uppercase tracking-widest transition-all ${active
         ? 'text-red-500'
-        : 'text-saga-text-dim hover:text-white'
+        : 'text-saga-text-dim hover:text-[var(--saga-text)]'
         }`}
     >
-      {children}
+      <div className="relative flex flex-col items-center group/mini">
+        <span className="relative z-10 mr-[-0.1em] transition-transform duration-500 group-hover/mini:translate-y-[-1px]">{children}</span>
+        <div className={`
+          absolute bottom-[-8px] h-[1.5px] transition-all duration-500
+          ${active
+            ? 'w-[60%] bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.6)] opacity-100'
+            : 'w-0 bg-white/10 opacity-0 group-hover/mini:w-[30%] group-hover/mini:opacity-30'}
+        `}></div>
+      </div>
     </Link>
   )
 }

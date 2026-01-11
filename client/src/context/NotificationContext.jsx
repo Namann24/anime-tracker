@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { getNotifications, markAsRead } from "../services/notificationService";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import { getNotifications, markAsRead, markAllAsRead as apiMarkAllAsRead, deleteNotification as apiDeleteNotification, clearNotifications as apiClearNotifications } from "../services/notificationService";
 import { useAuth } from "./AuthContext";
 import { useWatchlist } from "./WatchlistContext";
 
@@ -21,6 +21,7 @@ export const NotificationProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    const isChecking = useRef(false);
 
     // We need to access watchlist to check for reminders, but we can't import useWatchlist here 
     // if NotificationContext is outside of WatchlistProvider.
@@ -31,24 +32,37 @@ export const NotificationProvider = ({ children }) => {
 
     const refreshNotifications = useCallback(async () => {
         if (!user) return;
+        setLoading(true);
         try {
             const res = await getNotifications();
-            setNotifications(res.data);
+            // Sort: Unread first, then by date descending
+            const sorted = [...res.data].sort((a, b) => {
+                if (a.isRead !== b.isRead) return a.isRead ? 1 : -1;
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+            setNotifications(sorted);
             setUnreadCount(res.data.filter(n => !n.isRead).length);
         } catch (err) {
             if (err.response?.status !== 401) {
                 console.error("Failed to fetch notifications", err);
             }
+        } finally {
+            setLoading(false);
         }
     }, [user]);
 
     const checkEpisodeReminders = useCallback(async (watchlist) => {
-        if (!watchlist || watchlist.length === 0) return;
+        if (!watchlist || watchlist.length === 0 || isChecking.current) return;
 
         const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
         const lastCheckKey = `reminders_checked_${new Date().toDateString()}`;
 
         if (localStorage.getItem(lastCheckKey)) return; // Already checked today
+
+        // Prevent concurrent checks
+        isChecking.current = true;
+        // Lock immediately to prevent other triggers while this one is in flight
+        localStorage.setItem(lastCheckKey, 'true');
 
         try {
             // Get today's schedule
@@ -64,25 +78,42 @@ export const NotificationProvider = ({ children }) => {
 
             for (const anime of watching) {
                 if (airingToday.has(anime.mal_id)) {
-                    // Create notification
-                    await createNotification({
-                        type: 'episode',
-                        message: `New Episode of ${anime.title} airs today!`,
-                        link: `/anime/${anime.mal_id}`
-                    });
-                    newNotifications++;
+                    // Double check if we already have a notification for this anime today
+                    const alreadyExists = notifications.some(n =>
+                        n.type === 'episode' &&
+                        n.message.includes(anime.title) &&
+                        new Date(n.createdAt).toDateString() === new Date().toDateString()
+                    );
+
+                    if (!alreadyExists) {
+                        try {
+                            // Create notification
+                            await createNotification({
+                                type: 'episode',
+                                message: `New Episode of ${anime.title} airs today!`,
+                                link: `/anime/${anime.mal_id}`,
+                                animeId: anime.mal_id
+                            });
+                            newNotifications++;
+                        } catch (err) {
+                            // Ignore duplication error from server if it happens
+                            if (err.response?.status !== 400) throw err;
+                        }
+                    }
                 }
             }
 
             if (newNotifications > 0) {
                 refreshNotifications();
             }
-
-            localStorage.setItem(lastCheckKey, 'true');
         } catch (error) {
             console.error("Reminder check failed", error);
+            // If failed, we might want to allow another check later, 
+            // but for safety we usually keep it locked to avoid loops.
+        } finally {
+            isChecking.current = false;
         }
-    }, [refreshNotifications]);
+    }, [refreshNotifications, notifications]);
 
     useEffect(() => {
         if (user) {
@@ -105,10 +136,48 @@ export const NotificationProvider = ({ children }) => {
     const markSingleAsRead = async (id) => {
         try {
             await markAsRead(id);
-            setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
+            setNotifications(prev => {
+                const updated = prev.map(n => n._id === id ? { ...n, isRead: true } : n);
+                return updated.sort((a, b) => {
+                    if (a.isRead !== b.isRead) return a.isRead ? 1 : -1;
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+            });
             setUnreadCount(prev => Math.max(0, prev - 1));
         } catch (err) {
             console.error("Failed to mark as read", err);
+        }
+    };
+    const markAllRead = async () => {
+        try {
+            await apiMarkAllAsRead();
+            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+            setUnreadCount(0);
+        } catch (err) {
+            console.error("Failed to mark all as read", err);
+        }
+    };
+
+    const removeNotification = async (id) => {
+        try {
+            await apiDeleteNotification(id);
+            const wasUnread = notifications.find(n => n._id === id && !n.isRead);
+            setNotifications(prev => prev.filter(n => n._id !== id));
+            if (wasUnread) {
+                setUnreadCount(prev => Math.max(0, prev - 1));
+            }
+        } catch (err) {
+            console.error("Failed to delete notification", err);
+        }
+    };
+
+    const clearAllNotifications = async () => {
+        try {
+            await apiClearNotifications();
+            setNotifications([]);
+            setUnreadCount(0);
+        } catch (err) {
+            console.error("Failed to clear notifications", err);
         }
     };
 
@@ -119,6 +188,9 @@ export const NotificationProvider = ({ children }) => {
             loading,
             refreshNotifications,
             markSingleAsRead,
+            markAllRead,
+            removeNotification,
+            clearAllNotifications,
             checkEpisodeReminders
         }}>
             {children}

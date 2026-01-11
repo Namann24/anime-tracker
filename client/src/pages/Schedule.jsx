@@ -29,7 +29,16 @@ export default function Schedule() {
                 // Strategy: Fetch active day immediately.
 
                 const data = await getAnimeSchedule(activeDay);
-                setSchedule(prev => ({ ...prev, [activeDay]: data }));
+
+                // Deduplicate by mal_id and sort by broadcast time
+                const uniqueData = Array.from(new Map(data.map(item => [item.mal_id, item])).values())
+                    .sort((a, b) => {
+                        const timeA = a.broadcast?.time || "99:99";
+                        const timeB = b.broadcast?.time || "99:99";
+                        return timeA.localeCompare(timeB);
+                    });
+
+                setSchedule(prev => ({ ...prev, [activeDay]: uniqueData }));
             } catch (err) {
                 console.error("Schedule error", err);
             } finally {
@@ -43,7 +52,7 @@ export default function Schedule() {
     const watchlistIds = new Set(watchlist.map(a => a.mal_id));
 
     return (
-        <div className="min-h-screen text-[var(--saga-text)] pb-20 overflow-x-hidden transition-colors duration-500">
+        <div className="min-h-screen text-[var(--saga-text)] pb-20 overflow-x-hidden transition-colors duration-500 saga-animate-in">
             <div className="max-w-[1400px] mx-auto px-6 pt-32">
 
                 {/* THE SIGNAL CORE (HEADER) */}
@@ -133,6 +142,7 @@ export default function Schedule() {
                                                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                                                 alt=""
                                                 onError={(e) => {
+                                                    e.target.onerror = null;
                                                     e.target.src = "https://placehold.co/600x400/1a1a1a/ef4444?text=Signal+Lost";
                                                     e.target.classList.add('opacity-40');
                                                 }}

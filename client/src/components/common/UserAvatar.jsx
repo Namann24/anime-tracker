@@ -10,7 +10,7 @@ export default function UserAvatar({ src, username, className, size = "sm" }) {
             {!error && src && (src.includes('/') || src.startsWith('http') || src.startsWith('data:')) ? (
                 <img
                     src={src}
-                    className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+                    className="w-full h-full object-cover transition-all duration-700 hover:scale-110"
                     alt={username}
                     onError={() => setError(true)}
                 />

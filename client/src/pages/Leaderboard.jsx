@@ -30,11 +30,11 @@ export default function Leaderboard() {
     const rest = warriors.slice(3);
 
     return (
-        <div className="min-h-screen text-[var(--saga-text)] pb-32 pt-32 transition-colors duration-500 bg-transparent">
+        <div className="min-h-screen text-[var(--saga-text)] pb-32 pt-32 transition-colors duration-500 bg-transparent saga-animate-in">
             <div className="max-w-[1200px] mx-auto px-6">
 
                 {/* HEADER SECTION */}
-                <div className="text-center mb-24 relative">
+                <div className="text-center mb-40 relative">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-red-600/5 blur-[120px] rounded-full pointer-events-none"></div>
                     <div className="relative z-10">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-red-600/20 bg-red-600/5 text-red-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6">

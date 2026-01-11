@@ -4,13 +4,13 @@ import SagaButton from "../components/common/SagaButton";
 
 export default function About() {
     return (
-        <div className="min-h-screen text-[var(--saga-text)] pt-32 pb-24 overflow-hidden relative transition-colors">
+        <div className="min-h-screen text-[var(--saga-text)] pt-32 pb-24 overflow-hidden relative transition-colors saga-animate-in">
             {/* Background Halftone */}
             <div className="absolute inset-0 halftone opacity-[0.03] pointer-events-none"></div>
             <div className="absolute -top-48 -left-48 w-96 h-96 bg-red-600/5 blur-[120px] rounded-full pointer-events-none"></div>
 
             <div className="max-w-[1200px] mx-auto px-6 relative z-10">
-                <header className="text-center mb-24 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <header className="text-center mb-24 animate-in fade-in slide-in-from-bottom-10 duration-1000 ease-out">
                     <div className="flex justify-center mb-10 scale-150">
                         <SagaLogo />
                     </div>
@@ -28,7 +28,7 @@ export default function About() {
                 {/* Story Panels */}
                 <div className="grid md:grid-cols-2 gap-12 mb-32">
                     {/* Chapter 1: The Origin */}
-                    <div className="bg-[var(--saga-surface)] p-12 border border-[var(--saga-border)] rounded-[2.5rem] rotate-1 hover:rotate-0 transition-transform duration-700 hover:shadow-2xl hover:border-red-600/20 group">
+                    <div className="bg-[var(--saga-surface)] p-12 border border-[var(--saga-border)] rounded-[2.5rem] rotate-1 hover:rotate-0 transition-transform duration-1000 hover:shadow-2xl hover:border-red-600/20 group animate-in fade-in slide-in-from-left-8 delay-300 fill-mode-backwards">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="w-1.5 h-8 bg-red-600 rounded-full shadow-neon-red"></div>
                             <h2 className="text-shonen-bold text-4xl tracking-tighter uppercase text-[var(--saga-text)]">01: The Inception</h2>
@@ -42,7 +42,7 @@ export default function About() {
                     </div>
 
                     {/* Chapter 2: The Quest */}
-                    <div className="bg-[var(--saga-surface)] p-12 border border-[var(--saga-border)] rounded-[2.5rem] -rotate-1 hover:rotate-0 transition-transform duration-700 bg-gradient-to-br from-red-600/5 to-transparent hover:shadow-2xl hover:border-red-600/40 group">
+                    <div className="bg-[var(--saga-surface)] p-12 border border-[var(--saga-border)] rounded-[2.5rem] -rotate-1 hover:rotate-0 transition-transform duration-1000 bg-gradient-to-br from-red-600/5 to-transparent hover:shadow-2xl hover:border-red-600/40 group animate-in fade-in slide-in-from-right-8 delay-500 fill-mode-backwards">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="w-1.5 h-8 bg-red-600 rounded-full shadow-neon-red"></div>
                             <h2 className="text-shonen-bold text-4xl tracking-tighter uppercase text-[var(--saga-text)]">02: The Mission</h2>
@@ -57,9 +57,9 @@ export default function About() {
                 </div>
 
                 {/* Expedition Section */}
-                <div className="relative mb-32 group">
+                <div className="relative mb-32 group animate-in fade-in slide-in-from-bottom-12 delay-700 fill-mode-backwards">
                     <div className="absolute inset-0 speed-lines opacity-10 pointer-events-none"></div>
-                    <div className="bg-[var(--saga-surface)] p-16 border border-[var(--saga-border)] rounded-[3rem] text-center relative z-10 overflow-hidden shadow-2xl transition-all duration-500 hover:border-red-600/30">
+                    <div className="bg-[var(--saga-surface)] p-16 border border-[var(--saga-border)] rounded-[3rem] text-center relative z-10 overflow-hidden shadow-2xl transition-all duration-700 hover:border-red-600/30">
                         <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-red-600/10 blur-[80px] rounded-full group-hover:bg-red-600/20 transition-colors"></div>
                         <h2 className="text-shonen-bold text-5xl md:text-7xl mb-10 tracking-tighter uppercase leading-none text-[var(--saga-text)]">Join the Expedition</h2>
                         <p className="text-[var(--saga-text-dim)] max-w-3xl mx-auto mb-14 text-xl italic font-medium">

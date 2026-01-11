@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { getNotifications, markAsRead, clearNotifications, deleteReminder } from "../services/notificationService";
+import { useState } from "react";
+import { useNotifications } from "../context/NotificationContext";
 import { Link } from "react-router-dom";
 import { useConfirm } from "../context/ConfirmContext";
 import { useToast } from "../context/ToastContext";
@@ -8,47 +8,27 @@ import SagaButton from "../components/common/SagaButton";
 export default function Notifications() {
     const { confirm } = useConfirm();
     const { showToast } = useToast();
-    const [notifications, setNotifications] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { notifications, loading, markSingleAsRead, removeNotification, clearAllNotifications, unreadCount } = useNotifications();
     const [filter, setFilter] = useState("all"); // all, reminder, episode, system
-
-    const fetchNotifications = async () => {
-        try {
-            const res = await getNotifications();
-            setNotifications(res.data);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchNotifications();
-    }, []);
 
     const handleRead = async (id) => {
         try {
-            await markAsRead(id);
-            setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
+            await markSingleAsRead(id);
         } catch (err) {
             console.error(err);
         }
     };
 
-    const handleDeleteReminder = async (notification) => {
-        const isConfirmed = await confirm(`Remove reminder for this anime?`, "REMOVE REMINDER");
+    const handleDelete = async (id) => {
+        const isConfirmed = await confirm("Permanently purge this signal from the stream?", "DELETE SIGNAL");
         if (!isConfirmed) return;
 
         try {
-            if (notification.animeId) {
-                await deleteReminder(notification.animeId);
-            }
-            setNotifications(prev => prev.filter(n => n._id !== notification._id));
-            showToast("Reminder removed successfully", "success");
+            await removeNotification(id);
+            showToast("Signal purged successfully", "success");
         } catch (err) {
             console.error(err);
-            showToast("Failed to remove reminder", "error");
+            showToast("Failed to purge signal", "error");
         }
     };
 
@@ -56,8 +36,7 @@ export default function Notifications() {
         const isConfirmed = await confirm("Purge all alerts from the Neural Link?", "ARCHIVE PURGE");
         if (!isConfirmed) return;
         try {
-            await clearNotifications();
-            setNotifications([]);
+            await clearAllNotifications();
             showToast("Alert Archives Purged", "success");
         } catch (err) {
             console.error(err);
@@ -69,8 +48,6 @@ export default function Notifications() {
         if (filter === "all") return true;
         return n.type === filter;
     });
-
-    const unreadCount = notifications.filter(n => !n.isRead).length;
 
     if (loading) return (
         <div className="min-h-screen saga-cosmic-bg flex items-center justify-center">
@@ -210,15 +187,14 @@ export default function Notifications() {
                                                 </button>
                                             )}
 
-                                            {n.type === 'reminder' && (
-                                                <button
-                                                    onClick={() => handleDeleteReminder(n)}
-                                                    className="text-[9px] text-gray-500 hover:text-red-500 uppercase font-black tracking-widest transition-colors flex items-center gap-1"
-                                                >
-                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                                    Delete
-                                                </button>
-                                            )}
+                                            <button
+                                                onClick={() => handleDelete(n._id)}
+                                                className="text-[9px] text-gray-500 hover:text-red-500 uppercase font-black tracking-widest transition-colors flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-auto"
+                                                title="Delete Signal"
+                                            >
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                Delete
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

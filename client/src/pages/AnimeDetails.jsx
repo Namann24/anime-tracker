@@ -24,6 +24,7 @@ export default function AnimeDetails() {
     const [submitting, setSubmitting] = useState(false);
     const [revealSpoiler, setRevealSpoiler] = useState(false);
     const [watchlistPending, setWatchlistPending] = useState(false);
+    const [reminderPending, setReminderPending] = useState(false);
     const [reminderSet, setReminderSet] = useState(false);
 
     // NEW STATE
@@ -107,7 +108,8 @@ export default function AnimeDetails() {
     };
 
     const handleSetReminder = async () => {
-        if (!user) return showToast("Please login first", "error");
+        if (!user || reminderPending) return;
+        setReminderPending(true);
         try {
             if (reminderSet) {
                 // Remove reminder
@@ -135,6 +137,8 @@ export default function AnimeDetails() {
             } else {
                 showToast("Failed to toggle reminder", "error");
             }
+        } finally {
+            setReminderPending(false);
         }
     };
 
@@ -168,8 +172,23 @@ export default function AnimeDetails() {
     );
 
     if (!anime) return (
-        <div className="min-h-screen bg-[var(--saga-background)] flex items-center justify-center text-red-500 font-black uppercase tracking-[0.3em] text-2xl animate-pulse">
-            Saga Missing In Time.
+        <div className="min-h-screen bg-[var(--saga-background)] flex flex-col items-center justify-center p-6 text-center">
+            <div className="w-32 h-32 rounded-3xl border-2 border-red-600/30 flex items-center justify-center mb-10 relative group">
+                <div className="absolute inset-0 bg-red-600/10 blur-2xl group-hover:bg-red-600/20 transition-all rounded-full"></div>
+                <span className="text-6xl filter drop-shadow-[0_0_20px_rgba(239,68,68,0.5)]">⚠️</span>
+            </div>
+            <h1 className="text-shonen-bold text-5xl md:text-7xl text-white mb-6 uppercase tracking-tighter leading-none animate-pulse">
+                Saga <span className="text-red-600">Missing</span> In Time
+            </h1>
+            <p className="text-gray-400 text-lg mb-12 max-w-lg mx-auto leading-relaxed font-medium italic">
+                The neural stream encountered a temporal anomaly. The requested mission data is currently unavailable in the central archives.
+            </p>
+            <SagaButton v="outline" size="xl" onClick={() => navigate("/dashboard")} className="px-12 group">
+                <span className="relative z-10 flex items-center gap-3">
+                    <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                    RETURN TO COMMAND
+                </span>
+            </SagaButton>
         </div>
     );
 
@@ -318,8 +337,8 @@ export default function AnimeDetails() {
                                         )}
                                     </div>
 
-                                    <p className={`text-gray-300 text-lg leading-relaxed whitespace-pre-line transition-all duration-1000 ${!showSpoilers && !revealSpoiler && anime.synopsis ? 'blur-xl select-none opacity-20' : 'blur-0'}`}>
-                                        {anime.synopsis || "This entry is yet to be fully chronicled. Return soon for the complete legend."}
+                                    <p className={`text-gray-300 text-lg leading-relaxed whitespace-pre-line transition-all duration-1000 ${!showSpoilers && !revealSpoiler && anime.synopsis ? 'blur-xl select-none opacity-20' : 'blur-0'} ${!anime.synopsis ? 'italic text-white/20' : ''}`}>
+                                        {anime.synopsis || "This entry is yet to be fully chronicled. The archives await more temporal data to complete the legend."}
                                     </p>
 
                                     {anime.background && (

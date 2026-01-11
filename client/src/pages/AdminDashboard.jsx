@@ -202,7 +202,7 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div className="flex h-screen bg-transparent text-[var(--saga-text)] font-sans overflow-hidden selection:bg-red-500/30 selection:text-red-200 transition-colors duration-500">
+        <div className="flex h-screen bg-transparent text-[var(--saga-text)] font-sans overflow-hidden selection:bg-red-500/30 selection:text-red-200 transition-colors duration-500 saga-animate-in">
 
             {/* TACTICAL SIDEBAR */}
             <aside className="w-64 bg-[var(--saga-surface)]/90 backdrop-blur-xl border-r border-[var(--saga-border)] hidden md:flex flex-col relative z-30 shadow-2xl">
@@ -239,10 +239,10 @@ export default function AdminDashboard() {
                 <div className="absolute inset-0 halftone opacity-[0.03] pointer-events-none pointer-events-none"></div>
 
                 {/* HEADER */}
-                <header className="px-8 py-6 border-b border-[var(--saga-border)] flex items-center justify-between bg-[var(--saga-glass-bg)] backdrop-blur-md sticky top-0 z-20 shadow-sm">
+                <header className="px-8 py-5 border-b border-[var(--saga-border)] flex items-center justify-between bg-[var(--saga-glass-bg)] backdrop-blur-md sticky top-0 z-20 transition-all duration-500">
                     <div>
-                        <h2 className="text-2xl font-black uppercase tracking-tight text-[var(--saga-text)] flex items-center gap-3">
-                            <span className="text-red-600 opacity-50">/</span>
+                        <h2 className="text-xl font-black uppercase tracking-tight text-[var(--saga-text)] flex items-center gap-3">
+                            <span className="text-red-600 opacity-40">/</span>
                             {activeTab === 'users' ? 'Operative Database' :
                                 activeTab === 'content' ? 'Content Overwatch' :
                                     activeTab === 'clubs' ? 'Sector Control' :
@@ -251,19 +251,19 @@ export default function AdminDashboard() {
                         </h2>
                     </div>
                     <div className="flex items-center gap-6">
-                        <div className="px-3 py-1 rounded border border-[var(--saga-border)] bg-[var(--saga-surface)] text-[10px] font-mono text-[var(--saga-text-dim)] shadow-inner">
-                            SYS_TIME: {new Date().toLocaleTimeString()}
+                        <div className="px-4 py-1.5 rounded-full border border-[var(--saga-border)] bg-[var(--saga-surface)] text-[9px] font-mono text-[var(--saga-text-dim)] shadow-inner hidden lg:block tracking-widest">
+                            SIGNAL_SYNC: {new Date().toLocaleTimeString([], { hour12: false })}
                         </div>
 
                         {/* COMMANDER PROFILE */}
-                        <div className="flex items-center gap-3 pl-6 border-l border-[var(--saga-border)]">
+                        <div className="flex items-center gap-4 pl-6 border-l border-[var(--saga-border)]">
                             <div className="text-right hidden sm:block">
-                                <p className="text-xs font-bold text-[var(--saga-text)] leading-none tracking-wide">{user?.username}</p>
-                                <p className="text-[9px] text-red-500 uppercase tracking-widest leading-none mt-1">Commander</p>
+                                <p className="text-[10px] font-black text-[var(--saga-text)] leading-none uppercase tracking-widest">{user?.username}</p>
+                                <p className="text-[8px] text-red-500 uppercase tracking-[0.3em] leading-none mt-1 font-bold">Commander</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full border border-red-500/50 p-0.5 relative group cursor-pointer hover:border-red-500 transition-colors shadow-neon-red flex items-center justify-center bg-[var(--saga-surface)]">
-                                <UserAvatar src={user?.profilePic} username={user?.username} className="w-full h-full rounded-full" size="md" />
-                                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-black rounded-full shadow-[0_0_5px_#22c55e]"></div>
+                            <div className="w-9 h-9 rounded-full border border-red-500/30 p-0.5 relative group cursor-pointer hover:border-red-500 transition-all shadow-neon-red flex items-center justify-center bg-[var(--saga-surface)]">
+                                <UserAvatar src={user?.profilePic} username={user?.username} className="w-full h-full rounded-full" size="sm" />
+                                <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border-2 border-[var(--saga-surface)] rounded-full shadow-[0_0_8px_#22c55e]"></div>
                             </div>
                         </div>
                     </div>
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
                     {activeTab === 'overview' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {/* KPIS */}
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                                 <StatCard label="Total Operatives" value={stats.users} color="red" />
                                 <StatCard label="Active Sectors" value={stats.clubs || 0} color="blue" />
                                 <StatCard label="Intel Reports" value={stats.discussions} color="amber" />
@@ -327,9 +327,9 @@ export default function AdminDashboard() {
                                     </div>
                                     <div className="mt-4 space-y-2">
                                         {logs.map(log => (
-                                            <div key={log.id} className="flex justify-between items-center text-[10px] font-mono border-l-2 border-blue-500 pl-2 py-1 bg-blue-500/5 animate-in fade-in slide-in-from-left-2 overflow-hidden">
-                                                <span className="text-blue-500 font-bold uppercase">{log.msg}</span>
-                                                <span className="text-[var(--saga-text-dim)]">{log.time}</span>
+                                            <div key={log.id} className="flex justify-between items-center text-[10px] font-mono border-l-2 border-blue-500 pl-2 py-1 bg-blue-500/5 animate-in fade-in slide-in-from-left-2 overflow-hidden whitespace-nowrap">
+                                                <span className="text-blue-500 font-bold uppercase truncate mr-4">❯ {log.msg}</span>
+                                                <span className="text-[var(--saga-text-dim)] shrink-0">{log.time}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -580,7 +580,7 @@ function SectorControl({ clubs, isLoading, onDelete, onToggleNSFW }) {
                 reviews.length > 0 ? reviews.map(review => (
                     <div key={review._id} className="bg-[var(--saga-surface)] border border-[var(--saga-border)] rounded-xl p-5 flex gap-4 hover:border-amber-500/30 transition-colors shadow-sm group">
                         <div className="w-10 h-10 rounded-lg bg-[var(--saga-surface-hover)] border border-[var(--saga-border)] flex items-center justify-center font-bold text-[var(--saga-text)] shrink-0 overflow-hidden">
-                            {review.user?.profilePic ? <img src={review.user.profilePic} className="w-full h-full object-cover" alt="" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} /> : <span>{review.user?.username?.charAt(0)}</span>}
+                            <UserAvatar src={review.user?.profilePic} username={review.user?.username} className="w-full h-full" />
                         </div>
                         <div className="flex-1">
                             <div className="flex justify-between items-start mb-1">

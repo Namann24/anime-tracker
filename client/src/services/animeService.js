@@ -141,6 +141,11 @@ export const getAnimeByGenre = async (genreId, limit = 10) => {
   return data.data;
 };
 
+export const getRandomAnime = async () => {
+  const data = await jikanGet("https://api.jikan.moe/v4/random/anime");
+  return data.data;
+};
+
 export const getAIRecommendations = async (watchlist) => {
   if (!watchlist || watchlist.length === 0) return [];
 

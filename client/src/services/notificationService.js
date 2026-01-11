@@ -12,6 +12,10 @@ export const clearNotifications = async () => {
     return api.delete("/notifications");
 };
 
+export const markAllAsRead = async () => {
+    return api.put("/notifications/read-all");
+};
+
 export const createNotification = async (data) => {
     return api.post("/notifications", data);
 };
@@ -22,4 +26,8 @@ export const checkReminder = async (animeId) => {
 
 export const deleteReminder = async (animeId) => {
     return api.delete(`/notifications/reminder/${animeId}`);
+};
+
+export const deleteNotification = async (id) => {
+    return api.delete(`/notifications/${id}`);
 };

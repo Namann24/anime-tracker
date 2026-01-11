@@ -120,7 +120,7 @@ export default function Analytics() {
         </header>
 
         {/* KPI GRID */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-16 relative z-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-16 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-backwards">
           <ImpactCard title="Total Sagas" value={totalAnime} label="Chronicles" icon={<FilmIcon className="w-8 h-8" />} color="text-red-500" delay="0s" />
           <ImpactCard title="EPs Logged" value={totalEpisodesWatched} label="Milestones" icon={<StackIcon className="w-8 h-8" />} color="text-orange-500" delay="0.1s" />
           <ImpactCard title="Time Spent" value={timeDisplay} label="Temporal Decay" icon={<ClockIcon className="w-8 h-8" />} color="text-blue-500" delay="0.2s" />

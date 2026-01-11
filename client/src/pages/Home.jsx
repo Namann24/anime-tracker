@@ -77,7 +77,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen text-saga-text pb-20 overflow-x-hidden">
+    <div className="min-h-screen text-saga-text pb-20 overflow-x-hidden transition-colors duration-500 saga-animate-in">
       {/* INFINITE SAGA HERO */}
       <div className="relative min-h-[90vh] flex items-center pt-32 pb-20 bg-transparent">
         {/* Animated Background Elements */}
@@ -160,19 +160,42 @@ export default function Home() {
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--saga-text-dim)]">Neural Stream</span>
                       <div className="space-y-3">
                         {notifications.length > 0 ? (
-                          notifications.slice(0, 2).map((n, i) => (
-                            <div key={n._id} className="p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item">
-                              <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-lg bg-red-600/10 flex items-center justify-center text-red-500 group-hover/item:scale-110 transition-transform">
-                                  {n.type === 'episode' ? '🔔' : '🏛️'}
-                                </div>
-                                <div className="flex flex-col min-w-0">
-                                  <span className="text-[var(--saga-text)] text-sm font-bold truncate">{n.type === 'episode' ? 'Release Alert' : 'System Sync'}</span>
-                                  <span className="text-xs text-[var(--saga-text-dim)] truncate">{n.message}</span>
+                          (() => {
+                            // Filter and Sort: Unread first, then by date
+                            const uniqueMap = new Map();
+                            notifications.forEach(n => {
+                              const key = `${n.link || '#'}-${n.message || 'system_upd'}`;
+                              if (!uniqueMap.has(key)) {
+                                uniqueMap.set(key, n);
+                              }
+                            });
+
+                            const displayList = Array.from(uniqueMap.values())
+                              .sort((a, b) => {
+                                if (a.isRead !== b.isRead) return a.isRead ? 1 : -1;
+                                return new Date(b.createdAt) - new Date(a.createdAt);
+                              })
+                              .slice(0, 2);
+
+                            return displayList.map((n, i) => (
+                              <div key={n._id} className={`p-4 rounded-xl border border-[var(--saga-border)] transition-colors group/item relative ${!n.isRead ? 'bg-red-600/5 border-red-600/20' : 'bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)]'}`}>
+                                <div className="flex items-center gap-4">
+                                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-transform group-hover/item:scale-110 ${!n.isRead ? 'bg-red-600/20 text-red-500' : 'bg-red-600/10 text-red-500'}`}>
+                                    {n.type === 'episode' ? '🔔' : '🏛️'}
+                                  </div>
+                                  <div className="flex flex-col min-w-0 flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <span className={`text-sm font-bold truncate ${!n.isRead ? 'text-red-500' : 'text-[var(--saga-text)]'}`}>
+                                        {n.type === 'episode' ? 'Release Alert' : 'System Sync'}
+                                      </span>
+                                      {!n.isRead && <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>}
+                                    </div>
+                                    <span className={`text-xs truncate ${!n.isRead ? 'text-[var(--saga-text)] opacity-80 font-medium' : 'text-[var(--saga-text-dim)]'}`}>{n.message}</span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))
+                            ));
+                          })()
                         ) : (
                           <>
                             <div className="p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item">

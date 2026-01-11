@@ -199,7 +199,7 @@ export default function Watchlist() {
   };
 
   return (
-    <div className="min-h-screen text-[var(--saga-text)] pb-20 overflow-x-hidden transition-colors duration-500">
+    <div className="min-h-screen text-[var(--saga-text)] pb-20 overflow-x-hidden transition-colors duration-500 saga-animate-in">
       <div className="max-w-[1400px] mx-auto px-6">
 
         {/* COMMAND HEADER */}
@@ -289,7 +289,7 @@ export default function Watchlist() {
         </div>
 
         {/* CHRONICLE GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300 fill-mode-backwards">
           {watchlistLoading ? (
             [...Array(6)].map((_, i) => (
               <div key={i} className="bg-[var(--saga-surface)] rounded-[2rem] h-[300px] border border-[var(--saga-border)] relative overflow-hidden">
