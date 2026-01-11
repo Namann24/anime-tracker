@@ -9,7 +9,7 @@ import SagaLogo from "./SagaLogo";
 import UserAvatar from "./UserAvatar";
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const { unreadCount } = useNotifications();
   const { theme, toggleTheme } = useTheme();
@@ -129,6 +129,19 @@ export default function Navbar() {
                   <div className="h-[1px] w-0 bg-red-600 group-hover/profile:w-full transition-all duration-500 mt-1"></div>
                 </div>
               </Link>
+
+              {/* Logout Button */}
+              <button
+                onClick={() => {
+                  logout();
+                  window.location.href = "/login";
+                }}
+                className="group/logout relative flex items-center justify-center w-8 h-8 rounded-full border border-white/10 text-saga-text-dim hover:text-red-500 hover:border-red-500/50 hover:bg-red-500/10 transition-all duration-300 ml-2"
+                title="Disconnect"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                <div className="absolute inset-0 bg-red-500/20 blur opacity-0 group-hover/logout:opacity-100 transition-opacity rounded-full"></div>
+              </button>
             </>
           ) : (
             <div className="flex items-center gap-4">

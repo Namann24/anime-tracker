@@ -26,7 +26,7 @@ import {
 import { FaUserAstronaut, FaToriiGate, FaScroll, FaSkull, FaChartPie, FaSignOutAlt, FaShieldAlt, FaStar, FaTrash, FaBan, FaUserShield } from "react-icons/fa";
 
 export default function AdminDashboard() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { theme } = useTheme();
     const [activeTab, setActiveTab] = useState("overview");
     const [stats, setStats] = useState({ users: 0, reviews: 0, discussions: 0, bannedUsers: 0, feedbacks: 0 });
@@ -227,10 +227,10 @@ export default function AdminDashboard() {
                 </nav>
 
                 <div className="p-4 border-t border-[var(--saga-border)] relative z-10">
-                    <Link to="/" className="flex items-center gap-3 px-4 py-3 text-[var(--saga-text-dim)] hover:text-white transition-colors group">
+                    <button onClick={() => { logout(); window.location.href = "/login"; }} className="flex items-center gap-3 px-4 py-3 text-[var(--saga-text-dim)] hover:text-white transition-colors group w-full text-left">
                         <FaSignOutAlt className="group-hover:text-red-500 transition-colors" />
                         <span className="text-xs font-black uppercase tracking-widest group-hover:translate-x-1 transition-transform">Disconnect</span>
-                    </Link>
+                    </button>
                 </div>
             </aside>
 
