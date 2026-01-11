@@ -25,7 +25,7 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:5173", "https://anime-tracker-gamma.vercel.app"],
+  origin: ["http://localhost:5173", "https://anime-tracker-gamma.vercel.app", "https://anime-tracker-namanns-projects-759b266b.vercel.app"],
   credentials: true
 }));
 app.use(express.json());
