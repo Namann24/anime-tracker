@@ -195,24 +195,26 @@ export default function AnimeDetails() {
     return (
         <div className="min-h-screen text-[var(--saga-text)] pb-20 overflow-x-hidden transition-colors duration-500">
             {/* DYNAMIC HEADER */}
-            <div className="relative h-[600px] md:h-[700px] overflow-hidden">
+            <div className="relative h-[auto] md:h-[700px] overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10"></div>
                 <div className="absolute inset-0 halftone opacity-20 z-0"></div>
-                <img
-                    src={anime.images.jpg.large_image_url}
-                    className="w-full h-full object-cover blur-2xl scale-110 opacity-40"
-                    alt=""
-                />
+                <div className="absolute inset-0">
+                    <img
+                        src={anime.images.jpg.large_image_url}
+                        className="w-full h-full object-cover blur-2xl scale-110 opacity-40 md:opacity-40 opacity-20"
+                        alt=""
+                    />
+                </div>
 
-                <div className="absolute inset-0 z-20 flex items-end">
-                    <div className="max-w-[1400px] mx-auto w-full px-6 flex flex-col lg:flex-row gap-12 items-center lg:items-end pb-20">
+                <div className="relative z-20 flex items-end min-h-[500px] md:h-full pt-32 md:pt-0">
+                    <div className="max-w-[1400px] mx-auto w-full px-6 flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-end pb-12 md:pb-20">
                         {/* Poster */}
-                        <div className="relative group/poster perspective-2000">
+                        <div className="relative group/poster perspective-2000 shrink-0 hidden md:block">
                             <div className="absolute -inset-6 bg-red-600/20 blur-[60px] rounded-3xl opacity-0 group-hover/poster:opacity-100 transition-opacity duration-1000"></div>
                             <div className="relative z-10 rounded-2xl overflow-hidden border-2 border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.8)] group-hover/poster:scale-105 group-hover/poster:rotate-1 transition-all duration-700">
                                 <img
                                     src={anime.images.jpg.large_image_url}
-                                    className="w-64 md:w-80 h-auto"
+                                    className="w-56 md:w-80 h-auto"
                                     alt={anime.title}
                                 />
                             </div>
@@ -224,27 +226,35 @@ export default function AnimeDetails() {
                             )}
                         </div>
 
+                        {/* Mobile Poster (Smaller & Integrated) */}
+                        <div className="md:hidden w-40 h-60 rounded-2xl overflow-hidden border-2 border-white/10 shadow-2xl mb-2 shrink-0 relative animate-in zoom-in duration-700">
+                            <img src={anime.images.jpg.large_image_url} className="w-full h-full object-cover" alt={anime.title} />
+                            {anime.rank && (
+                                <div className="absolute top-0 right-0 bg-red-600 px-3 py-1 text-[10px] font-black text-white shadow-lg rounded-bl-lg">#{anime.rank}</div>
+                            )}
+                        </div>
+
                         {/* Title Info */}
-                        <div className="flex-1 text-center lg:text-left">
-                            <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-6">
-                                <span className="px-3 py-1.5 bg-red-600/20 border border-red-600/30 text-red-500 rounded-lg text-xs font-black uppercase tracking-widest animate-pulse">
+                        <div className="flex-1 text-center lg:text-left w-full">
+                            <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-4 md:mb-6">
+                                <span className="px-3 py-1.5 bg-red-600/20 border border-red-600/30 text-red-500 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest animate-pulse">
                                     {anime.status}
                                 </span>
                                 {anime.genres?.slice(0, 3).map(g => (
-                                    <span key={g.mal_id} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs font-bold text-gray-400">
+                                    <span key={g.mal_id} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] md:text-xs font-bold text-gray-400">
                                         {g.name}
                                     </span>
                                 ))}
                             </div>
 
-                            <h1 className="text-shonen-bold text-4xl md:text-7xl lg:text-8xl mb-8 leading-[0.9] drop-shadow-2xl">
+                            <h1 className="text-shonen-bold text-3xl md:text-7xl lg:text-8xl mb-6 md:mb-8 leading-[1.1] md:leading-[0.9] drop-shadow-2xl md:line-clamp-none">
                                 {anime.title}
                             </h1>
 
-                            <div className="flex flex-wrap gap-6 justify-center lg:justify-start items-center">
+                            <div className="flex flex-col md:flex-row gap-6 justify-center lg:justify-start items-center">
                                 <div className="flex items-center gap-3">
                                     <div className="text-3xl font-black text-red-500">{anime.score || 'N/A'}</div>
-                                    <div className="flex flex-col">
+                                    <div className="flex flex-col items-start">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Global Score</span>
                                         <div className="flex gap-0.5">
                                             {[...Array(5)].map((_, i) => (
@@ -256,12 +266,13 @@ export default function AnimeDetails() {
 
                                 <div className="h-10 w-px bg-white/10 mx-2 hidden md:block"></div>
 
-                                <div className="flex gap-4">
+                                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full md:w-auto px-0">
                                     <SagaButton
                                         variant={isInWatchlist ? "secondary" : "primary"}
                                         size="lg"
                                         onClick={handleToggleWatchlist}
                                         disabled={watchlistPending}
+                                        className="flex-1 md:flex-none justify-center w-full md:w-auto shadow-neon-red"
                                         icon={isInWatchlist ? (
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
                                         ) : (
@@ -276,8 +287,9 @@ export default function AnimeDetails() {
                                             variant="outline"
                                             size="lg"
                                             onClick={handleSetReminder}
+                                            className="flex-1 md:flex-none justify-center w-full md:w-auto"
                                         >
-                                            {reminderSet ? "✓ Reminder Active" : "Set Alert"}
+                                            {reminderSet ? "✓ Active" : "Set Alert"}
                                         </SagaButton>
                                     )}
                                 </div>
@@ -308,7 +320,7 @@ export default function AnimeDetails() {
                 </div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-6 pb-20 grid lg:grid-cols-12 gap-16">
+            <div className="max-w-[1400px] mx-auto px-4 md:px-6 pb-12 md:pb-20 grid lg:grid-cols-12 gap-8 md:gap-16">
                 {/* CONTENT AREA */}
                 <div className="lg:col-span-8 min-h-[500px]">
 

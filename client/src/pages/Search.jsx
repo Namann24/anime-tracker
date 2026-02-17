@@ -10,6 +10,7 @@ import SagaInput from "../components/common/SagaInput";
 import SagaSelect from "../components/common/SagaSelect";
 import SagaImage from "../components/common/SagaImage";
 import SagaSkeleton from "../components/common/SagaSkeleton";
+import BottomSheet from "../components/common/BottomSheet";
 import { RefreshCw } from "lucide-react";
 
 export default function Search() {
@@ -238,86 +239,170 @@ export default function Search() {
 
     const isInWatchlist = (malId) => watchlist.some(a => a.mal_id === malId);
 
+    const [showFilters, setShowFilters] = useState(false);
+
     return (
         <div className="min-h-screen pb-24 overflow-x-hidden transition-colors duration-500 saga-animate-in">
             {/* SEARCH HERO */}
-            <div className="pt-32 pb-20 relative border-b border-[var(--saga-border)] z-[20]">
+            <div className="pt-24 md:pt-32 pb-6 relative border-b border-[var(--saga-border)] z-[20]">
                 {/* Background FX */}
                 <div className="absolute inset-0 bg-grid opacity-[0.4] pointer-events-none"></div>
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[var(--saga-accent)]/5 to-transparent pointer-events-none"></div>
 
                 <div className="max-w-[1400px] mx-auto px-6 relative z-10">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-                            <div className="flex items-center gap-3 mb-4">
+                            <div className="flex items-center gap-3 mb-3">
                                 <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse shadow-neon-red"></span>
-                                <span className="text-[10px] font-black text-red-600 uppercase tracking-[0.4em]">Archive Protocol</span>
+                                <span className="text-[9px] font-black text-red-600 uppercase tracking-[0.4em]">Archive Protocol</span>
                             </div>
-                            <h1 className="text-shonen-bold text-6xl md:text-8xl tracking-tight uppercase leading-none text-[var(--saga-text)] text-glow">
+                            <h1 className="text-shonen-bold text-5xl md:text-8xl tracking-tight uppercase leading-none text-[var(--saga-text)] text-glow">
                                 Explore <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">Sagas</span>
                             </h1>
                         </div>
 
-                        {(query || selectedGenre || statusFilter || selectedYear) && (
-                            <SagaButton variant="outline" size="sm" onClick={() => setSearchParams(new URLSearchParams())} className="animate-in fade-in zoom-in duration-300">
-                                <span className="mr-2">✕</span> Reset Filters
-                            </SagaButton>
-                        )}
-                        <SagaButton
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => performSearch()}
-                            disabled={loading}
-                            className="ml-auto"
-                        >
-                            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                            Refresh
-                        </SagaButton>
+                        <div className="flex gap-3 items-center ml-auto">
+                            {(query || selectedGenre || statusFilter || selectedYear) && (
+                                <SagaButton variant="outline" size="sm" onClick={() => setSearchParams(new URLSearchParams())} className="animate-in fade-in zoom-in duration-300">
+                                    <span className="mr-2">✕</span> Reset
+                                </SagaButton>
+                            )}
+                            <button
+                                onClick={() => performSearch()}
+                                disabled={loading}
+                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--saga-surface)] border border-[var(--saga-border)] text-[var(--saga-text-dim)] hover:text-[var(--saga-text)] hover:border-red-600/30 transition-all hover:shadow-neon-red/20 active:scale-95 disabled:opacity-50"
+                                title="Refresh Engine"
+                            >
+                                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-6 items-stretch relative z-50">
-                        <div className="flex-1 w-full bg-transparent flex items-center h-16 group relative">
-                            {/* Underline Effect */}
-                            <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[var(--saga-text-dim)]/20 group-focus-within:bg-red-600 transition-colors duration-500"></div>
-                            <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-red-600 group-focus-within:w-full transition-all duration-700 ease-out"></div>
-
-                            <span className="text-red-500/50 font-mono text-xl mr-4 group-focus-within:text-red-500 transition-colors">I</span>
-                            <input
-                                placeholder="Search the archives..."
-                                value={query}
-                                onChange={e => updateFilters("q", e.target.value)}
-                                className="w-full bg-transparent text-2xl font-light text-[var(--saga-text)] placeholder-[var(--saga-text-dim)]/50 outline-none tracking-wide font-sans translate-y-[-2px]"
-                            />
+                    <div className="flex flex-col lg:flex-row gap-3 items-stretch relative z-50">
+                        <div className="flex-1 w-full relative group">
+                            <div className="absolute inset-0 bg-red-600/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
+                            <div className="relative flex items-center h-10 md:h-12 bg-black/40 border border-white/10 rounded-xl px-4 transition-all duration-300 group-focus-within:border-red-600/50 group-focus-within:shadow-[0_0_20px_rgba(220,38,38,0.1)]">
+                                <svg className="w-4 h-4 text-gray-500 mr-3 group-focus-within:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                <input
+                                    placeholder="Search..."
+                                    value={query}
+                                    onChange={e => updateFilters("q", e.target.value)}
+                                    className="w-full bg-transparent text-sm font-medium text-white placeholder-gray-600 outline-none tracking-tight font-sans"
+                                />
+                                <div className="hidden md:flex gap-2">
+                                    <kbd className="hidden md:inline-flex items-center gap-1 px-2 py-1 rounded bg-[var(--saga-bg)] border border-[var(--saga-border)] text-[10px] font-black text-[var(--saga-text-dim)] uppercase tracking-wider">
+                                        CTRL + K
+                                    </kbd>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="flex flex-wrap gap-3 shrink-0 w-full lg:w-auto">
-                            <SagaSelect
-                                value={selectedGenre}
-                                onChange={val => updateFilters("genre", val)}
-                                options={[{ label: "All Genres", value: "" }, ...genres.map(g => ({ label: g.name, value: g.mal_id }))]}
-                                className="h-full"
-                            />
-                            <SagaSelect
-                                value={sortBy}
-                                onChange={val => updateFilters("sort", val)}
-                                options={[
-                                    { label: query ? "Relevance" : "Popularity", value: query ? "relevance" : "popularity" },
-                                    { label: query ? "Popularity" : "Rating", value: query ? "popularity" : "score" },
-                                    { label: query ? "Score" : "Ranked", value: query ? "score" : "relevance" }
-                                ]}
-                                className="h-full"
-                            />
-                            <SagaSelect
-                                value={statusFilter}
-                                onChange={val => updateFilters("status", val)}
-                                options={[
-                                    { label: "All Status", value: "" },
-                                    { label: "Airing", value: "airing" },
-                                    { label: "Finished", value: "complete" },
-                                    { label: "Upcoming", value: "upcoming" }
-                                ]}
-                                className="h-full"
-                            />
+                        <div className="flex flex-col w-full lg:w-auto">
+                            {/* Mobile Filter Toggle */}
+                            <div className="lg:hidden w-full mb-1">
+                                <button
+                                    onClick={() => setShowFilters(!showFilters)}
+                                    className={`
+                                        w-full flex items-center justify-between px-4 py-2.5 rounded-xl border transition-all duration-300 h-10 md:h-12
+                                        ${showFilters
+                                            ? 'bg-red-600/10 border-red-600 text-red-500 shadow-neon-red'
+                                            : 'bg-[var(--saga-surface)] border-[var(--saga-border)] text-[var(--saga-text)] hover:border-red-600/30'
+                                        }
+                                    `}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className={`p-0.5 rounded-md transition-colors ${showFilters ? 'bg-red-600 text-white' : 'bg-[var(--saga-bg)] text-[var(--saga-text-dim)] border border-[var(--saga-border)]'}`}>
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                                            {(selectedGenre || statusFilter || selectedYear || (sortBy && sortBy !== 'popularity' && sortBy !== 'relevance')) ? 'FILTERS ACTIVE' : 'FILTERS'}
+                                        </span>
+                                    </div>
+                                    <div className={`transform transition-transform duration-300 ${showFilters ? 'rotate-180 text-red-500' : 'text-[var(--saga-text-dim)]'}`}>
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                                    </div>
+                                </button>
+                            </div>
+
+                            {/* Filter Grid */}
+                            {/* Filter Grid - Desktop Only */}
+                            <div className="hidden lg:flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
+                                <SagaSelect
+                                    label={null}
+                                    value={selectedGenre}
+                                    onChange={val => updateFilters("genre", val)}
+                                    options={[{ label: "All Genres", value: "" }, ...genres.map(g => ({ label: g.name, value: g.mal_id }))]}
+                                    className="h-full w-full lg:w-48"
+                                />
+                                <SagaSelect
+                                    label={null}
+                                    value={sortBy}
+                                    onChange={val => updateFilters("sort", val)}
+                                    options={[
+                                        { label: "Relevance/Pop", value: query ? "relevance" : "popularity" },
+                                        { label: "Rating", value: "score" },
+                                        { label: "Newest", value: "aired" }
+                                    ]}
+                                    className="h-full w-full lg:w-40"
+                                />
+                                <SagaSelect
+                                    label={null}
+                                    value={statusFilter}
+                                    onChange={val => updateFilters("status", val)}
+                                    options={[
+                                        { label: "All Status", value: "" },
+                                        { label: "Airing", value: "airing" },
+                                        { label: "Finished", value: "complete" },
+                                        { label: "Upcoming", value: "upcoming" }
+                                    ]}
+                                    className="h-full w-full lg:w-40"
+                                />
+                            </div>
+
+                            {/* Mobile Filters Bottom Sheet */}
+                            <BottomSheet
+                                isOpen={showFilters}
+                                onClose={() => setShowFilters(false)}
+                                title="Search Parameters"
+                            >
+                                <div className="flex flex-col gap-6 pb-8">
+                                    <SagaSelect
+                                        label="Genre"
+                                        value={selectedGenre}
+                                        onChange={val => updateFilters("genre", val)}
+                                        options={[{ label: "All Genres", value: "" }, ...genres.map(g => ({ label: g.name, value: g.mal_id }))]}
+                                        className="w-full"
+                                    />
+                                    <SagaSelect
+                                        label="Sort Order"
+                                        value={sortBy}
+                                        onChange={val => updateFilters("sort", val)}
+                                        options={[
+                                            { label: query ? "Relevance" : "Popularity", value: query ? "relevance" : "popularity" },
+                                            { label: "Rating", value: "score" },
+                                            { label: "Newest", value: "aired" }
+                                        ]}
+                                        className="w-full"
+                                    />
+                                    <SagaSelect
+                                        label="Airing Status"
+                                        value={statusFilter}
+                                        onChange={val => updateFilters("status", val)}
+                                        options={[
+                                            { label: "All Status", value: "" },
+                                            { label: "Airing", value: "airing" },
+                                            { label: "Finished", value: "complete" },
+                                            { label: "Upcoming", value: "upcoming" }
+                                        ]}
+                                        className="w-full"
+                                    />
+                                    <div className="pt-4">
+                                        <SagaButton variant="primary" size="lg" className="w-full" onClick={() => setShowFilters(false)}>
+                                            Apply Filters
+                                        </SagaButton>
+                                    </div>
+                                </div>
+                            </BottomSheet>
                         </div>
                     </div>
                 </div>
@@ -434,6 +519,6 @@ export default function Search() {
                     </>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

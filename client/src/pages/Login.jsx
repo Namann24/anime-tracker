@@ -48,8 +48,8 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-transparent relative overflow-hidden px-4 transition-colors duration-500">
 
-      <div className="max-w-md w-full relative z-10">
-        <div className="bg-[var(--saga-surface)]/80 backdrop-blur-xl border border-[var(--saga-border)] rounded-[40px] shadow-2xl p-8 md:p-12 animate-in fade-in zoom-in duration-700">
+      <div className="max-w-md w-full relative z-10 my-10 md:my-0">
+        <div className="bg-[var(--saga-surface)]/80 backdrop-blur-xl border border-[var(--saga-border)] rounded-[2rem] md:rounded-[40px] shadow-2xl p-6 md:p-12 animate-in fade-in zoom-in duration-700">
 
           {/* Logo & Header */}
           <div className="text-center mb-12">

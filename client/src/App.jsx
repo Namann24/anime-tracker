@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import DynamicBackground from "./components/effects/DynamicBackground";
 import Navbar from "./components/common/Navbar";
+import MobileNavbar from "./components/common/MobileNavbar";
 import TacticalOverlay from "./components/common/TacticalOverlay";
 import PageTransition from "./components/common/PageTransition";
 import CommandPalette from "./components/common/CommandPalette";
@@ -22,6 +23,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Help from "./pages/Help";
 import Leaderboard from "./pages/Leaderboard";
+import Settings from "./pages/Settings";
 
 export default function App() {
   const location = useLocation();
@@ -31,6 +33,7 @@ export default function App() {
       <DynamicBackground />
       <TacticalOverlay />
       <Navbar />
+      <MobileNavbar />
       <CommandPalette />
       <PageTransition>
         <Routes location={location}>
@@ -51,6 +54,7 @@ export default function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/about" element={<About />} />
           <Route path="/help" element={<Help />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </PageTransition>
     </>

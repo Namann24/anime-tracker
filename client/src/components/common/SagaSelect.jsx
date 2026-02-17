@@ -35,7 +35,7 @@ const SagaSelect = ({
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={`
-          w-full saga-glass border border-saga-border rounded-xl px-4 py-3 flex items-center justify-between transition-all
+          w-full bg-black/90 border border-saga-border rounded-xl px-4 py-3.5 flex items-center justify-between transition-all
           group hover:border-saga-accent/50 hover:shadow-neon-red
           ${isOpen ? 'border-saga-accent/50 shadow-neon-red' : ''}
         `}

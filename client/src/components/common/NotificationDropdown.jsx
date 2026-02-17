@@ -33,7 +33,7 @@ export default function NotificationDropdown({ onClose }) {
     return (
         <div
             ref={dropdownRef}
-            className="absolute top-full right-0 mt-4 w-[360px] saga-glass border-saga rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden z-[100] saga-animate-in"
+            className="absolute top-full right-0 mt-4 w-[90vw] max-w-[360px] saga-glass border-saga rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden z-[100] saga-animate-in"
         >
             <div className="p-6 border-b border-[var(--saga-border)] flex justify-between items-center bg-white/5">
                 <div className="flex items-center gap-2">

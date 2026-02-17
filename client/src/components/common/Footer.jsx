@@ -5,12 +5,12 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-20 pb-12 px-6 overflow-hidden">
+    <footer className="relative mt-12 md:mt-20 pb-12 px-6 overflow-hidden">
       {/* Background Decor */}
       <div className="absolute inset-0 bg-halftone opacity-[0.03] pointer-events-none"></div>
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
 
-      <div className="max-w-[1400px] mx-auto pt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
+      <div className="max-w-[1400px] mx-auto pt-12 md:pt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
         {/* Brand Section */}
         <div className="flex flex-col gap-6">
           <SagaLogo />

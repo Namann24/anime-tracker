@@ -6,6 +6,7 @@ const SagaButton = ({
     size = 'md',
     className = '',
     icon,
+    full = false,
     ...props
 }) => {
     const baseStyles = "relative inline-flex items-center justify-center font-black uppercase tracking-widest transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none group overflow-hidden";
@@ -25,9 +26,17 @@ const SagaButton = ({
         xl: "px-10 py-5 text-base rounded-2xl"
     };
 
+    const handleClick = (e) => {
+        if (navigator.vibrate) {
+            try { navigator.vibrate(10); } catch (err) { /* ignore */ }
+        }
+        if (props.onClick) props.onClick(e);
+    };
+
     return (
         <button
-            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${full ? 'w-full' : ''} ${className}`}
+            onClick={handleClick}
             {...props}
         >
             {/* Gloss Effect for non-ghost/outline */}

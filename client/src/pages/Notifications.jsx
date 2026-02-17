@@ -56,20 +56,20 @@ export default function Notifications() {
     );
 
     return (
-        <div className="min-h-screen saga-cosmic-bg text-[var(--saga-text)] pb-24 pt-32 px-6 transition-colors duration-500">
+        <div className="min-h-screen saga-cosmic-bg text-[var(--saga-text)] pb-24 pt-24 md:pt-32 px-4 md:px-6 transition-colors duration-500">
             <div className="max-w-5xl mx-auto">
                 {/* HEADER */}
-                <div className="mb-16">
+                <div className="mb-12 md:mb-16">
                     <div className="flex items-center gap-3 mb-4">
                         <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
-                        <span className="text-[10px] font-black text-red-500 uppercase tracking-[0.4em]">Tactical Alerts</span>
+                        <span className="text-[9px] md:text-[10px] font-black text-red-500 uppercase tracking-[0.4em]">Tactical Alerts</span>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div>
-                            <h1 className="text-shonen-bold text-5xl md:text-7xl tracking-tight uppercase leading-none mb-2">
+                            <h1 className="text-shonen-bold text-4xl md:text-7xl tracking-tight uppercase leading-none mb-2">
                                 NEURAL <span className="text-red-600">STREAM</span>
                             </h1>
-                            <p className="text-gray-500 font-medium italic">
+                            <p className="text-gray-500 font-medium italic text-sm md:text-base">
                                 {unreadCount > 0 ? `${unreadCount} unread signal${unreadCount > 1 ? 's' : ''} detected` : "All signals processed"}
                             </p>
                         </div>
@@ -83,7 +83,7 @@ export default function Notifications() {
                 </div>
 
                 {/* FILTER TABS */}
-                <div className="flex gap-3 mb-12 overflow-x-auto pb-2 no-scrollbar">
+                <div className="flex gap-3 mb-8 md:mb-12 overflow-x-auto pb-2 no-scrollbar">
                     {[
                         { id: "all", label: "All Signals", icon: "📡" },
                         { id: "reminder", label: "Reminders", icon: "🔔" },
@@ -93,7 +93,7 @@ export default function Notifications() {
                         <button
                             key={tab.id}
                             onClick={() => setFilter(tab.id)}
-                            className={`px-6 py-3 rounded-xl border font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap ${filter === tab.id
+                            className={`px-4 py-3 md:px-6 md:py-3 rounded-xl border font-black text-[10px] md:text-xs uppercase tracking-widest transition-all whitespace-nowrap flex-shrink-0 ${filter === tab.id
                                 ? "bg-red-600 border-red-600 text-white shadow-[0_0_20px_rgba(255,0,60,0.3)]"
                                 : "bg-white/5 border-white/10 text-gray-500 hover:border-red-600/30"
                                 }`}
@@ -106,10 +106,10 @@ export default function Notifications() {
 
                 {/* NOTIFICATIONS LIST */}
                 {filteredNotifications.length === 0 ? (
-                    <div className="saga-glass border border-white/10 p-20 rounded-[3rem] text-center">
-                        <div className="text-8xl mb-8 opacity-20 grayscale">📭</div>
-                        <h2 className="text-shonen-bold text-3xl mb-4 uppercase">Neural Silence</h2>
-                        <p className="text-gray-500 max-w-md mx-auto italic">
+                    <div className="saga-glass border border-white/10 p-10 md:p-20 rounded-[2rem] md:rounded-[3rem] text-center">
+                        <div className="text-6xl md:text-8xl mb-6 md:mb-8 opacity-20 grayscale">📭</div>
+                        <h2 className="text-shonen-bold text-2xl md:text-3xl mb-4 uppercase">Neural Silence</h2>
+                        <p className="text-gray-500 max-w-md mx-auto italic text-sm md:text-base">
                             "The stream is quiet. We'll alert you when new chronicles emerge from the void."
                         </p>
                     </div>
@@ -118,7 +118,7 @@ export default function Notifications() {
                         {filteredNotifications.map(n => (
                             <div
                                 key={n._id}
-                                className={`saga-glass border rounded-2xl p-6 transition-all duration-300 group relative overflow-hidden ${n.isRead
+                                className={`saga-glass border rounded-2xl p-4 md:p-6 transition-all duration-300 group relative overflow-hidden ${n.isRead
                                     ? 'border-white/5 opacity-60'
                                     : 'border-red-600/20 shadow-[0_0_30px_rgba(255,0,60,0.1)]'
                                     }`}
@@ -128,9 +128,9 @@ export default function Notifications() {
                                     <div className="absolute inset-0 bg-red-600/5 blur-xl pointer-events-none"></div>
                                 )}
 
-                                <div className="relative z-10 flex items-start gap-6">
+                                <div className="relative z-10 flex items-start gap-4 md:gap-6">
                                     {/* Icon */}
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-transform group-hover:scale-110 ${n.type === 'reminder' ? 'bg-orange-600/20' :
+                                    <div className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-2xl transition-transform group-hover:scale-110 flex-shrink-0 ${n.type === 'reminder' ? 'bg-orange-600/20' :
                                         n.type === 'episode' ? 'bg-red-600/20' :
                                             'bg-blue-600/20'
                                         }`}>

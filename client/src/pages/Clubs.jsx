@@ -58,6 +58,7 @@ export default function Clubs() {
     setShowDropdown(false);
   };
 
+
   useEffect(() => {
     loadClubs();
   }, []);
@@ -125,67 +126,65 @@ export default function Clubs() {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-24 px-6 md:px-12 transition-colors duration-500 saga-animate-in">
+    <div className="min-h-screen pt-20 md:pt-32 pb-24 px-4 md:px-12 transition-colors duration-500 saga-animate-in">
       <div className="max-w-[1400px] mx-auto">
 
         {/* HEADER */}
-
-        {/* HEADER */}
-        <header className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16 md:mb-24">
           <div className="relative">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-2 h-2 rounded-full bg-red-600 shadow-pulse"></div>
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-red-600">The Societies</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-red-600 shadow-neon-red animate-pulse"></div>
+              <span className="text-[10px] font-black uppercase tracking-[0.5em] text-red-600">Saga Societies</span>
             </div>
-            <h1 className="text-shonen-bold text-6xl md:text-8xl mb-2 tracking-tighter leading-none">
-              Command <span className="text-red-600">Clubs</span>
+            <h1 className="text-shonen-bold text-4xl md:text-8xl mb-4 tracking-tighter leading-none text-white uppercase italic">
+              Alliance <span className="text-red-500 font-outline-sm">Bricks</span>
             </h1>
-            <p className="text-[var(--saga-text-dim)] font-medium italic opacity-60 max-w-xl">"Forge alliances and etch your theories into the digital halls of the SAGA community."</p>
+            <p className="text-[var(--saga-text-dim)] font-medium italic opacity-40 max-w-lg text-xs md:text-base">
+              "Forge unbreakable bonds and archive your theories in the digital halls of the community."
+            </p>
           </div>
 
           {user && (
-            <SagaButton variant="primary" size="lg" onClick={() => setShowModal(true)}>
-              + Incept New Club
+            <SagaButton variant="primary" size="lg" onClick={() => setShowModal(true)} className="w-full md:w-auto shadow-impact">
+              + INCEPT SOCIETY
             </SagaButton>
           )}
         </header>
 
         {/* MY CLUBS SECTION */}
-        {user && (
-          <div className="mb-24">
-            <h3 className="text-shonen-bold text-3xl mb-8 tracking-tighter uppercase flex items-center gap-4">
-              <span className="w-8 h-[2px] bg-red-600"></span>
-              Your Alliances
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {clubs.filter(c => isMember(c)).length > 0 ? (
-                clubs.filter(c => isMember(c)).map(club => (
-                  <ClubMangaPanel key={club._id} club={club} user={user} handleJoin={handleJoin} handleLeave={handleLeave} isMember={true} />
-                ))
-              ) : (
-                <div className="col-span-full py-16 text-center border-2 border-dashed border-[var(--saga-border)] rounded-[3rem]">
-                  <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">No alliances forged yet.</p>
+        {user && clubs.filter(c => isMember(c)).length > 0 && (
+          <div className="mb-24 animate-in fade-in slide-in-from-left-8 duration-700 delay-200 fill-mode-backwards">
+            <div className="flex items-center gap-6 mb-10">
+              <div className="h-0.5 w-12 bg-red-600/30"></div>
+              <h3 className="text-shonen-bold text-2xl md:text-4xl tracking-tighter uppercase text-white">Your Core Alliances</h3>
+            </div>
+            <div className="flex overflow-x-auto pb-8 gap-6 no-scrollbar snap-x snap-mandatory px-2">
+              {clubs.filter(c => isMember(c)).map(club => (
+                <div key={club._id} className="min-w-[300px] md:min-w-[400px] snap-center">
+                  <PremiumClubCard club={club} user={user} handleLeave={handleLeave} isMember={true} />
                 </div>
-              )}
+              ))}
             </div>
           </div>
         )}
 
-        {/* DISCOVER SECTION */}
-        <div className="mb-12">
-          <h3 className="text-shonen-bold text-3xl mb-8 tracking-tighter uppercase flex items-center gap-4">
-            <span className="w-8 h-[2px] bg-red-600"></span>
-            Explore the Realm
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+        {/* EXPLORE SECTION */}
+        <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-400 fill-mode-backwards">
+          <div className="flex items-center gap-6 mb-12">
+            <div className="h-0.5 w-12 bg-red-600/30"></div>
+            <h3 className="text-shonen-bold text-2xl md:text-4xl tracking-tighter uppercase text-white">Registry Discovery</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
             {clubs.filter(c => !user || !isMember(c)).map((club) => (
-              <ClubMangaPanel key={club._id} club={club} user={user} handleJoin={handleJoin} handleLeave={handleLeave} isMember={false} />
+              <PremiumClubCard key={club._id} club={club} user={user} handleJoin={handleJoin} handleLeave={handleLeave} isMember={false} />
             ))}
 
             {clubs.length === 0 && (
-              <div className="col-span-full py-32 text-center border-2 border-dashed border-[var(--saga-border)] rounded-[3rem]">
-                <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest mb-4">The realm is quiet.</p>
-                <SagaButton variant="ghost" onClick={() => setShowModal(true)}>Cast the First Stone</SagaButton>
+              <div className="col-span-full py-40 text-center border-2 border-dashed border-white/5 rounded-[3.5rem] bg-white/[0.01]">
+                <span className="text-5xl mb-6 block opacity-20 grayscale">⛩️</span>
+                <p className="text-gray-500 font-black uppercase text-[10px] tracking-[0.6em] mb-8">The registry is empty.</p>
+                <SagaButton variant="ghost" onClick={() => setShowModal(true)}>INITIALIZE FIRST NODE</SagaButton>
               </div>
             )}
           </div>
@@ -193,56 +192,51 @@ export default function Clubs() {
 
         {/* CREATE MODAL */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] flex items-center justify-center p-6 sm:p-12 animate-in fade-in duration-300">
-            <div className="bg-[var(--saga-surface)] border border-[var(--saga-border)] rounded-[3rem] p-10 md:p-16 w-full max-w-2xl relative overflow-hidden shadow-[0_0_100px_rgba(255,0,60,0.1)]">
-
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-3xl z-[200] flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-500">
+            <div className="bg-[#0a0a0a] border border-white/10 rounded-[3rem] p-8 md:p-16 w-full max-w-2xl relative shadow-[0_0_100px_rgba(220,38,38,0.1)] max-h-[90vh] overflow-y-auto no-scrollbar">
               <button
                 onClick={() => setShowModal(false)}
-                className="absolute top-8 right-8 text-[var(--saga-text-dim)] hover:text-white transition-colors"
-                title="Seal Modal"
+                className="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors p-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
 
               <div className="mb-12">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                  <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Architect of Legend</span>
-                </div>
-                <h2 className="text-shonen-bold text-5xl md:text-6xl tracking-tighter uppercase leading-none">Incept <span className="text-red-600">Club</span></h2>
+                <span className="text-[10px] font-black text-red-600 uppercase tracking-[0.5em] block mb-4">Node Inception</span>
+                <h2 className="text-shonen-bold text-5xl md:text-7xl tracking-tighter uppercase text-white leading-none">Forge <span className="text-red-500">Society</span></h2>
               </div>
 
-              <form onSubmit={handleCreate} className="space-y-8">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] ml-1">Club Identity</label>
+              <form onSubmit={handleCreate} className="space-y-8 md:space-y-10">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] ml-2">Designation</label>
                   <SagaInput
-                    placeholder="e.g. SHONEN SUPREMACY"
+                    placeholder="e.g. CORE_SAGA_ELITE"
                     value={newClub.name}
                     onChange={e => setNewClub({ ...newClub, name: e.target.value })}
                     required
                   />
                 </div>
 
-                <div className="space-y-2 relative">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] ml-1">Banner Discovery <span className="opacity-40 italic">(Search Anime)</span></label>
+                <div className="space-y-3 relative">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] ml-2">Banner Integration</label>
                   <SagaInput
-                    placeholder="Search Anime for Banner..."
+                    placeholder="Search Anime Archives..."
                     value={query}
                     onChange={e => setQuery(e.target.value)}
                   />
                   {showDropdown && searchResults.length > 0 && (
-                    <div className="absolute z-[110] w-full mt-2 bg-[var(--saga-surface)] border border-[var(--saga-border)] rounded-2xl shadow-2xl overflow-hidden no-scrollbar">
+                    <div className="absolute z-[210] w-full mt-3 bg-[#0d0d0d] border border-white/10 rounded-3xl shadow-3xl overflow-hidden animate-in slide-in-from-top-4">
                       {searchResults.map(anime => (
                         <button
                           key={anime.mal_id}
                           type="button"
                           onClick={() => selectAnime(anime)}
-                          className="w-full text-left p-4 hover:bg-red-600/10 transition-colors flex items-center gap-4 border-b border-[var(--saga-border)] last:border-0"
+                          className="w-full text-left p-5 hover:bg-red-600/10 transition-colors flex items-center gap-5 border-b border-white/5 last:border-0"
                         >
-                          <img src={anime.images?.jpg?.small_image_url} alt="" className="w-12 h-16 object-cover rounded-lg" />
+                          <img src={anime.images?.jpg?.small_image_url} alt="" className="w-14 h-20 object-cover rounded-xl" />
                           <div>
-                            <div className="font-black text-xs text-[var(--saga-text)] leading-none mb-1">{anime.title}</div>
-                            <div className="text-[10px] text-gray-500 uppercase tracking-widest">{anime.year || "YEARLESS"} • {anime.type}</div>
+                            <div className="font-black text-xs text-white leading-none mb-2 uppercase tracking-tight">{anime.title}</div>
+                            <div className="text-[9px] text-gray-500 uppercase tracking-widest">{anime.type} // {anime.year || "NODE_01"}</div>
                           </div>
                         </button>
                       ))}
@@ -251,32 +245,32 @@ export default function Clubs() {
                 </div>
 
                 {newClub.image && (
-                  <div className="relative h-48 rounded-3xl overflow-hidden border border-red-600/30 group">
-                    <img src={newClub.image} className="w-full h-full object-cover transition duration-700 group-hover:scale-105" alt="Banner Preview" />
-                    <div className="absolute inset-0 bg-red-600/20 mix-blend-overlay"></div>
+                  <div className="relative h-48 rounded-[2rem] overflow-hidden border border-red-600/30">
+                    <img src={newClub.image} className="w-full h-full object-cover grayscale opacity-50 transition duration-1000" alt="Preview" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-red-600/20 via-transparent to-transparent"></div>
                     <button
                       type="button"
                       onClick={() => setNewClub({ ...newClub, image: "" })}
-                      className="absolute top-4 right-4 bg-black/60 p-2 rounded-full hover:bg-red-600 transition-colors backdrop-blur-md"
+                      className="absolute top-4 right-4 bg-black/80 p-2 rounded-full hover:bg-red-600 transition-all border border-white/10"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      <XIcon className="w-4 h-4 text-white" />
                     </button>
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] ml-1">Archive Manifesto</label>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] ml-2">Manifesto Transmission</label>
                   <textarea
-                    className="w-full p-6 bg-black/5 border border-[var(--saga-border)] rounded-[2rem] text-[var(--saga-text)] outline-none focus:border-red-600/50 transition-all min-h-[120px] text-sm resize-none"
-                    placeholder="What is the purpose of this society?"
+                    className="w-full p-8 bg-black border border-white/10 rounded-[2.5rem] text-sm text-white/80 outline-none focus:border-red-600/50 transition-all min-h-[140px] resize-none font-mono"
+                    placeholder="Define the scope and protocols of this alliance..."
                     value={newClub.description}
                     onChange={e => setNewClub({ ...newClub, description: e.target.value })}
                   />
                 </div>
 
-                <div className="flex gap-4 pt-4">
-                  <SagaButton variant="ghost" full onClick={() => setShowModal(false)} type="button">Seal</SagaButton>
-                  <SagaButton variant="primary" full type="submit">Forge Club</SagaButton>
+                <div className="flex gap-6 pt-6 font-mono">
+                  <SagaButton variant="ghost" full onClick={() => setShowModal(false)} type="button">ABANDON</SagaButton>
+                  <SagaButton variant="primary" full type="submit">INITIALIZE BOND</SagaButton>
                 </div>
               </form>
             </div>
@@ -287,54 +281,91 @@ export default function Clubs() {
   );
 }
 
-function ClubMangaPanel({ club, user, handleJoin, handleLeave, isMember }) {
+function PremiumClubCard({ club, user, handleJoin, handleLeave, isMember }) {
   return (
-    <div className="group relative bg-[var(--saga-surface)] border border-[var(--saga-border)] p-6 md:p-8 rounded-[2.5rem] transition-all duration-500 aura-flare hover:-translate-y-2 flex flex-col h-full overflow-hidden">
-
-      {/* CARD BG ACCENT */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-      {/* BANNER RECTANGLE (Manga Style) */}
-      <div className="relative h-48 mb-8 rounded-[2rem] overflow-hidden border border-[var(--saga-border)] bg-black/5">
+    <Link
+      to={`/clubs/${club._id}`}
+      className="group relative flex flex-col h-[400px] md:h-[450px] bg-black border border-white/[0.08] rounded-[3.5rem] overflow-hidden transition-all duration-700 hover:border-red-600/40 hover:-translate-y-3 hover:shadow-[0_30px_60px_-15px_rgba(220,38,38,0.15)] shadow-4xl active:scale-[0.98]"
+    >
+      {/* BACKGROUND LAYER */}
+      <div className="absolute inset-0 z-0">
         {club.image ? (
-          <img src={club.image} className="w-full h-full object-cover transition duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" alt="" />
+          <img src={club.image} className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-80 group-hover:scale-110 transition-all duration-1000" alt="" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl opacity-10">⛩️</div>
+          <div className="w-full h-full bg-[#050505] flex items-center justify-center text-7xl opacity-10">⛩️</div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--saga-surface)] via-transparent to-transparent opacity-60"></div>
+        {/* OVERLAYS */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent opacity-60"></div>
 
-        {/* MEMBERS BADGE */}
-        <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
-          <span className="w-1 h-1 rounded-full bg-red-600 animate-pulse"></span>
-          <span className="text-[9px] font-black text-white uppercase tracking-widest">{club.members.length} Chronicles</span>
-        </div>
+        {/* Tactical Scanlines */}
+        <div className="absolute inset-0 scanline-mask opacity-[0.05] pointer-events-none"></div>
       </div>
 
-      <div className="flex-1 flex flex-col p-2">
-        <h3 className="text-shonen-bold text-3xl mb-4 tracking-tighter uppercase leading-none line-clamp-1 group-hover:text-red-500 transition-colors">
-          {club.name}
-        </h3>
-        <p className="text-gray-500 text-sm italic font-medium line-clamp-2 mb-8 flex-1">
-          {club.description || "MANIFESTO PENDING ARCHIVAL..."}
-        </p>
-
-        <div className="flex items-center justify-between border-t border-[var(--saga-border)] pt-8">
-          <Link to={`/clubs/${club._id}`} className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--saga-text-dim)] hover:text-red-600 transition-colors">
-            Visit Society →
-          </Link>
-
-          {user && !isMember && (
-            <SagaButton size="sm" onClick={() => handleJoin(club._id)}>Forge Bond</SagaButton>
-          ) || isMember && (
-            <button
-              onClick={() => handleLeave(club._id)}
-              className="text-[9px] font-black text-red-600 uppercase tracking-widest bg-red-600/5 px-4 py-2 rounded-xl border border-red-600/30 hover:bg-red-600 hover:text-white transition-all cursor-pointer"
-            >
-              Bonded
-            </button>
+      {/* CONTENT LAYER */}
+      <div className="relative z-10 flex flex-col h-full p-8 md:p-12">
+        {/* TOP BADGES */}
+        <div className="flex justify-between items-start mb-auto">
+          <div className="flex items-center gap-2 px-4 py-1.5 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+            <span className="text-[9px] font-black text-white/90 uppercase tracking-widest">{club.members.length} SYNCED</span>
+          </div>
+          {isMember && (
+            <div className="p-2 rounded-xl bg-red-600 shadow-neon-red text-white">
+              <Shield className="w-4 h-4" />
+            </div>
           )}
         </div>
+
+        {/* BOTTOM INTEL */}
+        <div className="mt-auto space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-4 opacity-40">
+              <div className="h-[1px] w-8 bg-red-600"></div>
+              <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white">ALLIANCE_ID: {club._id.slice(-6).toUpperCase()}</span>
+            </div>
+            <h3 className="text-shonen-bold text-3xl md:text-5xl text-white tracking-tighter uppercase leading-none italic group-hover:text-red-500 transition-colors drop-shadow-impact">
+              {club.name}
+            </h3>
+          </div>
+
+          <p className="text-white/40 text-xs md:text-sm italic font-medium line-clamp-2 pr-8 group-hover:text-white/60 transition-colors leading-relaxed">
+            {club.description || "PROTOCOL_BREACH: MANIFESTO_MISSING_FROM_ARCHIVE..."}
+          </p>
+
+          <div className="flex items-center justify-between pt-4 border-t border-white/5 font-mono">
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-red-600/50 group-hover:text-red-500 transition-colors">ACCESS_ARCHIVE →</span>
+
+            {user && (
+              <div onClick={(e) => e.preventDefault()}>
+                {!isMember ? (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleJoin(club._id); }}
+                    className="px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black text-white uppercase tracking-widest hover:bg-red-600 hover:border-red-600 transition-all active:scale-95"
+                  >
+                    JOIN_BOND
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleLeave(club._id); }}
+                    className="px-6 py-2 bg-red-600/10 border border-red-600/40 rounded-xl text-[9px] font-black text-red-500 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all active:scale-95"
+                  >
+                    BONDED
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Corner Decorative Bits */}
+      <div className="absolute top-6 left-6 w-4 h-4 border-t border-l border-white/20 rounded-tl-xl transition-all group-hover:border-red-600 group-hover:scale-125"></div>
+      <div className="absolute bottom-6 right-6 w-4 h-4 border-b border-r border-white/20 rounded-br-xl transition-all group-hover:border-red-600 group-hover:scale-125"></div>
+    </Link>
   );
 }
+
+const XIcon = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+);

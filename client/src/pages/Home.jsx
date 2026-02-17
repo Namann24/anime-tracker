@@ -79,36 +79,35 @@ export default function Home() {
   return (
     <div className="min-h-screen text-saga-text pb-20 overflow-x-hidden transition-colors duration-500 saga-animate-in">
       {/* INFINITE SAGA HERO */}
-      <div className="relative min-h-[90vh] flex items-center pt-32 pb-20 bg-transparent">
+      <div className="relative min-h-[75vh] md:min-h-[90vh] flex items-center pt-24 md:pt-32 pb-12 md:pb-20 bg-transparent">
         {/* Animated Background Elements */}
-        {/* Animated Background Elements - Removed to use Global DynamicBackground */}
 
         <div className="max-w-[1400px] mx-auto px-6 relative z-10 w-full">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
             <div className="flex-1 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-red-600/30 bg-red-600/10 text-red-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-red-600/30 bg-red-600/10 text-red-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-4 md:mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse shadow-neon-red"></span>
                 The Next Level Tracking
               </div>
 
-              <h1 className="font-shonen text-5xl md:text-8xl lg:text-[100px] mb-6 leading-[0.85] text-saga-text animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
-                WRITE YOUR <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 font-outline-sm text-glow">OWN SAGA.</span>
+              <h1 className="font-shonen mb-4 md:mb-6 leading-[0.9] md:leading-[0.85] text-saga-text">
+                <span className="block text-[clamp(3.5rem,10vw,8rem)] animate-in fade-in slide-in-from-left-8 duration-700 delay-100">WRITE YOUR</span>
+                <span className="block text-[clamp(3.5rem,10vw,8rem)] text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 font-outline-sm text-glow animate-in fade-in slide-in-from-right-8 duration-700 delay-200">OWN SAGA.</span>
               </h1>
 
-              <p className="text-base md:text-lg text-saga-text-dim mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
+              <p className="text-sm md:text-lg text-saga-text-dim mb-6 md:mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 mobile-clean-text">
                 Experience the ultimate anime chronicling sanctuary. <br className="hidden md:block" />
                 Track your progress, discover legendary series, and <br className="hidden md:block" />
                 forge your legacy among global fans.
               </p>
 
-              <div className="flex flex-wrap justify-center lg:justify-start gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 md:gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
                 {user ? (
                   <SagaButton
                     variant="primary"
                     size="lg"
                     onClick={() => navigate("/watchlist")}
-                    className="shadow-neon-red shadow-lg"
+                    className="shadow-neon-red shadow-lg w-full sm:w-auto justify-center"
                   >
                     Open Chronicles
                   </SagaButton>
@@ -118,7 +117,7 @@ export default function Home() {
                       variant="primary"
                       size="lg"
                       onClick={() => navigate("/register")}
-                      className="shadow-neon-red shadow-lg"
+                      className="shadow-neon-red shadow-lg w-full sm:w-auto justify-center"
                     >
                       Begin Journey
                     </SagaButton>
@@ -126,6 +125,7 @@ export default function Home() {
                       variant="outline"
                       size="lg"
                       onClick={() => navigate("/login")}
+                      className="w-full sm:w-auto justify-center"
                     >
                       Login
                     </SagaButton>
@@ -135,20 +135,20 @@ export default function Home() {
             </div>
 
             {/* Tactical HUB Panel */}
-            <div className="flex-1 relative w-full lg:max-w-[650px] animate-in fade-in slide-in-from-bottom-12 duration-700 delay-300">
-              <div className="relative aspect-[16/10] w-full group perspective-1000">
+            <div className="flex-1 relative w-full lg:max-w-[650px] animate-in fade-in slide-in-from-bottom-12 duration-700 delay-300 mt-8 lg:mt-0">
+              <div className="relative aspect-auto md:aspect-[16/10] w-full group perspective-1000">
                 {/* Secondary Offset Panel (Bottom Layer) */}
-                <div className="absolute -bottom-4 -left-4 w-full h-full border border-saga-border rounded-[40px] bg-saga-surface/50 backdrop-blur-sm transition-transform duration-500 group-hover:rotate-2 group-hover:translate-x-2 group-hover:translate-y-2"></div>
+                <div className="hidden md:block absolute -bottom-4 -left-4 w-full h-full border border-saga-border rounded-[32px] md:rounded-[40px] bg-saga-surface/50 backdrop-blur-sm transition-transform duration-500 group-hover:rotate-2 group-hover:translate-x-2 group-hover:translate-y-2"></div>
 
                 {/* Main HUD Panel */}
-                <div className="absolute inset-0 border border-saga-border rounded-[40px] overflow-hidden shadow-2xl bg-saga-glass-bg backdrop-blur-xl transition-all duration-700 group-hover:-translate-y-2">
+                <div className="relative md:absolute inset-0 border border-saga-border rounded-[2rem] md:rounded-[40px] overflow-hidden shadow-2xl bg-saga-glass-bg backdrop-blur-xl transition-all duration-700 group-hover:-translate-y-2">
                   <div className="absolute inset-0 bg-halftone opacity-[0.03] z-10 pointer-events-none"></div>
 
-                  <div className="absolute inset-0 p-8 flex flex-col justify-between z-20">
+                  <div className="relative p-6 md:p-8 flex flex-col justify-between z-20 gap-6 md:gap-0 h-full">
                     <div className="flex justify-between items-start">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-saga-accent mb-2">Tactical Hub</span>
-                        <span className="font-shonen text-3xl text-saga-text">SYSTEM STATUS</span>
+                        <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-saga-accent mb-2">Tactical Hub</span>
+                        <span className="font-shonen text-2xl md:text-3xl text-saga-text">SYSTEM STATUS</span>
                       </div>
                       <div className="px-3 py-1 rounded-md border border-green-500/50 bg-green-500/10 text-green-500 text-[9px] font-black uppercase shadow-[0_0_10px_rgba(34,197,94,0.2)]">
                         Online
@@ -157,7 +157,7 @@ export default function Home() {
 
                     {/* Dynamic Reminders List */}
                     <div className="space-y-4">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--saga-text-dim)]">Neural Stream</span>
+                      <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[var(--saga-text-dim)]">Neural Stream</span>
                       <div className="space-y-3">
                         {notifications.length > 0 ? (
                           (() => {
@@ -178,19 +178,19 @@ export default function Home() {
                               .slice(0, 2);
 
                             return displayList.map((n, i) => (
-                              <div key={n._id} className={`p-4 rounded-xl border border-[var(--saga-border)] transition-colors group/item relative ${!n.isRead ? 'bg-red-600/5 border-red-600/20' : 'bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)]'}`}>
-                                <div className="flex items-center gap-4">
-                                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-transform group-hover/item:scale-110 ${!n.isRead ? 'bg-red-600/20 text-red-500' : 'bg-red-600/10 text-red-500'}`}>
+                              <div key={n._id} className={`p-3 md:p-4 rounded-xl border border-[var(--saga-border)] transition-colors group/item relative ${!n.isRead ? 'bg-red-600/5 border-red-600/20' : 'bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)]'}`}>
+                                <div className="flex items-center gap-3 md:gap-4">
+                                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center transition-transform group-hover/item:scale-110 shrink-0 ${!n.isRead ? 'bg-red-600/20 text-red-500' : 'bg-red-600/10 text-red-500'}`}>
                                     {n.type === 'episode' ? '🔔' : '🏛️'}
                                   </div>
                                   <div className="flex flex-col min-w-0 flex-1">
                                     <div className="flex items-center gap-2">
-                                      <span className={`text-sm font-bold truncate ${!n.isRead ? 'text-red-500' : 'text-[var(--saga-text)]'}`}>
+                                      <span className={`text-xs md:text-sm font-bold truncate ${!n.isRead ? 'text-red-500' : 'text-[var(--saga-text)]'}`}>
                                         {n.type === 'episode' ? 'Release Alert' : 'System Sync'}
                                       </span>
                                       {!n.isRead && <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>}
                                     </div>
-                                    <span className={`text-xs truncate ${!n.isRead ? 'text-[var(--saga-text)] opacity-80 font-medium' : 'text-[var(--saga-text-dim)]'}`}>{n.message}</span>
+                                    <span className={`text-[10px] md:text-xs truncate ${!n.isRead ? 'text-[var(--saga-text)] opacity-80 font-medium' : 'text-[var(--saga-text-dim)]'}`}>{n.message}</span>
                                   </div>
                                 </div>
                               </div>
@@ -198,16 +198,16 @@ export default function Home() {
                           })()
                         ) : (
                           <>
-                            <div className="p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item">
-                              <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-lg bg-red-600/10 flex items-center justify-center text-red-500 group-hover/item:scale-110 transition-transform shadow-inner">🔔</div>
+                            <div className="p-3 md:p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item">
+                              <div className="flex items-center gap-3 md:gap-4">
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-red-600/10 flex items-center justify-center text-red-500 group-hover/item:scale-110 transition-transform shadow-inner shrink-0">🔔</div>
                                 <div className="flex flex-col">
-                                  <span className="text-[var(--saga-text)] text-sm font-bold">Chronicle Standby</span>
-                                  <span className="text-xs text-[var(--saga-text-dim)]">Tracking for new release alerts active.</span>
+                                  <span className="text-[var(--saga-text)] text-xs md:text-sm font-bold">Chronicle Standby</span>
+                                  <span className="text-[10px] md:text-xs text-[var(--saga-text-dim)]">Tracking for new release alerts active.</span>
                                 </div>
                               </div>
                             </div>
-                            <div className="p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item relative overflow-hidden">
+                            <div className="hidden md:block p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item relative overflow-hidden">
                               <div className="absolute inset-x-0 bottom-0 h-[2px] bg-red-600/50 animate-progress"></div>
                               <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-lg bg-orange-600/10 flex items-center justify-center text-orange-500 group-hover/item:scale-110 transition-transform shadow-inner">🛰️</div>
@@ -222,18 +222,18 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-saga-border pt-6 mt-auto">
+                    <div className="flex items-center justify-between border-t border-saga-border pt-4 md:pt-6 mt-auto">
                       <div className="flex items-center gap-3">
                         <div className="w-2 h-2 rounded-full bg-saga-accent shadow-neon-red"></div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-saga-text-dim">AI Sync Active</span>
+                        <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-saga-text-dim">AI Sync Active</span>
                       </div>
-                      <Link to="/analytics" className="text-[10px] font-black text-saga-accent uppercase tracking-widest hover:translate-x-1 transition-transform flex items-center gap-1 group/link">View Details <span className="group-hover/link:translate-x-1 transition-transform">→</span></Link>
+                      <Link to="/analytics" className="text-[9px] md:text-[10px] font-black text-saga-accent uppercase tracking-widest hover:translate-x-1 transition-transform flex items-center gap-1 group/link">View Details <span className="group-hover/link:translate-x-1 transition-transform">→</span></Link>
                     </div>
                   </div>
                 </div>
 
                 {/* Floating Data Badge - Positioned strictly to prevent overlap */}
-                <div className="absolute top-4 -right-4 bg-saga-surface border border-saga-border p-4 rounded-2xl flex items-center gap-4 z-30 shadow-xl backdrop-blur-md">
+                <div className="hidden md:flex absolute top-4 -right-4 bg-saga-surface border border-saga-border p-4 rounded-2xl items-center gap-4 z-30 shadow-xl backdrop-blur-md">
                   <div className="w-10 h-10 rounded-lg bg-saga-accent flex items-center justify-center font-black text-white text-lg shadow-neon-red">
                     S
                   </div>
@@ -414,7 +414,7 @@ export default function Home() {
         )}
 
         {/* FEATURE HIGHLIGHTS */}
-        <div className="grid md:grid-cols-3 gap-8 mt-40 pb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mt-24 md:mt-40 pb-20">
           <FeatureHighlight
             icon={<Zap className="w-8 h-8 text-yellow-500" />}
             title="Dragon Precision"

@@ -33,7 +33,7 @@ const SagaInput = ({
 
                     <input
                         className={`
-              w-full bg-transparent px-4 py-2.5 text-sm text-saga-text placeholder-saga-text-dim focus:outline-none focus:ring-0
+              w-full bg-transparent px-4 py-3.5 text-sm text-saga-text placeholder-saga-text-dim focus:outline-none focus:ring-0
               ${className}
             `}
                         {...props}

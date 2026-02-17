@@ -104,34 +104,34 @@ export default function Analytics() {
   const chartGridColor = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
 
   return (
-    <div className="min-h-screen pt-32 pb-24 px-6 md:px-12 transition-colors duration-500 saga-animate-in">
+    <div className="min-h-screen pt-24 md:pt-32 pb-24 px-4 md:px-12 transition-colors duration-500 saga-animate-in">
       <div className="max-w-[1400px] mx-auto">
 
         {/* HEADER */}
-        <header className="mb-16 relative">
+        <header className="mb-12 md:mb-16 relative">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-2 h-2 rounded-full bg-red-600 shadow-pulse"></div>
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-red-600">SAGA Intel</span>
           </div>
-          <h1 className="text-shonen-bold text-6xl md:text-8xl mb-2 tracking-tighter leading-none">
+          <h1 className="text-shonen-bold text-4xl md:text-8xl mb-2 tracking-tighter leading-none">
             Tactical <span className="text-red-600">Insight</span>
           </h1>
-          <p className="text-[var(--saga-text-dim)] font-medium italic opacity-60">"Quantifying the legend of your journey through the archive."</p>
+          <p className="text-[var(--saga-text-dim)] font-medium italic opacity-60 text-sm md:text-base">"Quantifying the legend of your journey through the archive."</p>
         </header>
 
         {/* KPI GRID */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-16 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-backwards">
-          <ImpactCard title="Total Sagas" value={totalAnime} label="Chronicles" icon={<FilmIcon className="w-8 h-8" />} color="text-red-500" delay="0s" />
-          <ImpactCard title="EPs Logged" value={totalEpisodesWatched} label="Milestones" icon={<StackIcon className="w-8 h-8" />} color="text-orange-500" delay="0.1s" />
-          <ImpactCard title="Time Spent" value={timeDisplay} label="Temporal Decay" icon={<ClockIcon className="w-8 h-8" />} color="text-blue-500" delay="0.2s" />
-          <ImpactCard title="Success Rate" value={`${totalAnime ? Math.round((statusCounts["Completed"] || 0) / totalAnime * 100) : 0}%`} label="Completion" icon={<CheckSquareIcon className="w-8 h-8" />} color="text-green-500" delay="0.3s" />
+          <ImpactCard title="Total Sagas" value={totalAnime} label="Chronicles" icon={<FilmIcon className="w-6 h-6 md:w-8 md:h-8" />} color="text-red-500" delay="0s" />
+          <ImpactCard title="EPs Logged" value={totalEpisodesWatched} label="Milestones" icon={<StackIcon className="w-6 h-6 md:w-8 md:h-8" />} color="text-orange-500" delay="0.1s" />
+          <ImpactCard title="Time Spent" value={timeDisplay} label="Temporal Decay" icon={<ClockIcon className="w-6 h-6 md:w-8 md:h-8" />} color="text-blue-500" delay="0.2s" />
+          <ImpactCard title="Success Rate" value={`${totalAnime ? Math.round((statusCounts["Completed"] || 0) / totalAnime * 100) : 0}%`} label="Completion" icon={<CheckSquareIcon className="w-6 h-6 md:w-8 md:h-8" />} color="text-green-500" delay="0.3s" />
         </div>
 
         {/* CHARTS SECTION */}
         <div className="grid lg:grid-cols-2 gap-8 md:gap-12 relative z-10">
 
           {/* WATCHLIST DIST */}
-          <div className="bg-[var(--saga-surface)] p-8 md:p-12 border-4 border-black rounded-[2.5rem] relative group overflow-hidden shadow-impact transition-all hover:scale-[1.01]">
+          <div className="bg-[var(--saga-surface)] p-5 md:p-12 border-4 border-black rounded-[2.5rem] relative group overflow-hidden shadow-impact transition-all hover:scale-[1.01]">
             <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-red-600 z-10"></div>
             <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-red-600 z-10"></div>
 
@@ -139,12 +139,12 @@ export default function Analytics() {
             <div className="flex items-center justify-between mb-10">
               <div className="flex flex-col">
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-red-600 mb-2">Tactical Map</span>
-                <h3 className="text-shonen-bold text-3xl tracking-tighter uppercase">CHRONICLE STATUS</h3>
+                <h3 className="text-shonen-bold text-2xl md:text-3xl tracking-tighter uppercase">CHRONICLE STATUS</h3>
               </div>
               <div className="px-3 py-1 bg-red-600/10 text-red-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-red-600/20">LIVE DATA</div>
             </div>
 
-            <div className="h-[350px] w-full relative group/chart">
+            <div className="h-[250px] md:h-[350px] w-full relative group/chart">
               {/* Halftone Texture Overlay */}
               <div className="absolute inset-0 halftone opacity-[0.03] pointer-events-none rounded-[2rem]"></div>
 
@@ -163,8 +163,8 @@ export default function Analytics() {
                       data={statusData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={80}
-                      outerRadius={110}
+                      innerRadius={60}
+                      outerRadius={80}
                       paddingAngle={10}
                       dataKey="value"
                       stroke="none"
@@ -196,13 +196,13 @@ export default function Analytics() {
               {/* HUD Decoration */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center">
                 <div className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] mb-1">Status</div>
-                <div className="text-3xl font-black text-white">{totalAnime}</div>
+                <div className="text-2xl md:text-3xl font-black text-white">{totalAnime}</div>
               </div>
             </div>
           </div>
 
           {/* GENRE DIST */}
-          <div className="bg-[var(--saga-surface)] p-8 md:p-12 border-4 border-black rounded-[2.5rem] relative group overflow-hidden shadow-impact transition-all hover:scale-[1.01]">
+          <div className="bg-[var(--saga-surface)] p-5 md:p-12 border-4 border-black rounded-[2.5rem] relative group overflow-hidden shadow-impact transition-all hover:scale-[1.01]">
             <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-blue-600 z-10"></div>
             <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-blue-600 z-10"></div>
 
@@ -210,12 +210,12 @@ export default function Analytics() {
             <div className="flex items-center justify-between mb-10">
               <div className="flex flex-col">
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 mb-2">Elemental Core</span>
-                <h3 className="text-shonen-bold text-3xl tracking-tighter uppercase">TOP AFFINITIES</h3>
+                <h3 className="text-shonen-bold text-2xl md:text-3xl tracking-tighter uppercase">TOP AFFINITIES</h3>
               </div>
               <div className="px-3 py-1 bg-blue-600/10 text-blue-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-blue-600/20">ARCHIVE PULSE</div>
             </div>
 
-            <div className="h-[350px] w-full relative">
+            <div className="h-[250px] md:h-[350px] w-full relative">
               <div className="absolute inset-0 halftone opacity-[0.03] pointer-events-none rounded-[2rem]"></div>
               {genreData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
@@ -231,7 +231,7 @@ export default function Analytics() {
                     <YAxis
                       dataKey="name"
                       type="category"
-                      width={120}
+                      width={100}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fontSize: 9, fontWeight: 900, textTransform: 'uppercase', fill: chartTextColor, letterSpacing: '0.1em' }}
@@ -240,7 +240,7 @@ export default function Analytics() {
                     <Bar
                       dataKey="value"
                       radius={[0, 4, 4, 0]}
-                      barSize={24}
+                      barSize={16}
                       animationBegin={500}
                       animationDuration={1500}
                     >
@@ -262,21 +262,21 @@ export default function Analytics() {
         </div>
 
         {/* Neural Activity Log (New Section) */}
-        <section className="mt-24 bg-[var(--saga-surface)] border-4 border-[var(--saga-border)] p-10 rounded-[3rem] relative overflow-hidden group shadow-2xl">
+        <section className="mt-16 md:mt-24 bg-[var(--saga-surface)] border-4 border-[var(--saga-border)] p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] relative overflow-hidden group shadow-2xl">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent opacity-50"></div>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 relative z-10">
             <div className="flex items-center gap-6">
-              <div className="w-16 h-16 rounded-3xl bg-red-600/10 border border-red-600/30 flex items-center justify-center text-3xl">🧩</div>
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-3xl bg-red-600/10 border border-red-600/30 flex items-center justify-center text-xl md:text-3xl">🧩</div>
               <div>
-                <h4 className="text-shonen-bold text-2xl tracking-tighter uppercase mb-1 text-[var(--saga-text)]">SYSTEM SYNC: OPTIMIZED</h4>
-                <p className="text-[10px] font-black text-[var(--saga-text-dim)] uppercase tracking-widest">Neural link integrity at 98.4%. Data archival complete.</p>
+                <h4 className="text-shonen-bold text-xl md:text-2xl tracking-tighter uppercase mb-1 text-[var(--saga-text)]">SYSTEM SYNC: OPTIMIZED</h4>
+                <p className="text-[9px] md:text-[10px] font-black text-[var(--saga-text-dim)] uppercase tracking-widest">Neural link integrity at 98.4%. Data archival complete.</p>
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="px-6 py-3 bg-[var(--saga-surface-hover)] border border-[var(--saga-border)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--saga-text-dim)]">
+            <div className="flex flex-wrap justify-center gap-4">
+              <div className="px-4 py-2 md:px-6 md:py-3 bg-[var(--saga-surface-hover)] border border-[var(--saga-border)] rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest text-[var(--saga-text-dim)]">
                 Session Uptime: {Math.floor(Math.random() * 120)}m
               </div>
-              <div className="px-6 py-3 bg-red-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-impact animate-pulse">
+              <div className="px-4 py-2 md:px-6 md:py-3 bg-red-600 text-white rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-impact animate-pulse">
                 Active Protocol
               </div>
             </div>
@@ -296,7 +296,7 @@ export default function Analytics() {
 function ImpactCard({ title, value, label, icon, delay, color }) {
   return (
     <div
-      className="bg-[var(--saga-surface)] p-6 md:p-8 border-4 border-black rounded-[2rem] group hover:border-red-600 transition-all duration-500 overflow-hidden relative shadow-impact"
+      className="bg-[var(--saga-surface)] p-4 md:p-8 border-4 border-black rounded-[2rem] group hover:border-red-600 transition-all duration-500 overflow-hidden relative shadow-impact"
       style={{ animationDelay: delay }}
     >
       <div className="absolute top-0 left-0 w-2 h-full bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>

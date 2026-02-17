@@ -235,13 +235,25 @@ export default function AdminDashboard() {
             </aside>
 
             {/* MAIN INTERFACE */}
-            <main className="flex-1 overflow-y-auto h-full relative bg-transparent">
+            <main className="flex-1 overflow-y-auto h-full relative bg-transparent flex flex-col">
                 <div className="absolute inset-0 halftone opacity-[0.03] pointer-events-none pointer-events-none"></div>
 
+                {/* MOBILE NAV (Visible only on mobile) */}
+                <div className="md:hidden bg-[var(--saga-surface)] border-b border-[var(--saga-border)] p-4 flex gap-4 overflow-x-auto no-scrollbar sticky top-0 z-30 shadow-xl">
+                    <MobileTabButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={<FaChartPie />} />
+                    <MobileTabButton active={activeTab === 'users'} onClick={() => setActiveTab('users')} icon={<FaUserAstronaut />} />
+                    <MobileTabButton active={activeTab === 'content'} onClick={() => setActiveTab('content')} icon={<FaShieldAlt />} />
+                    <MobileTabButton active={activeTab === 'clubs'} onClick={() => setActiveTab('clubs')} icon={<FaToriiGate />} />
+                    <MobileTabButton active={activeTab === 'reviews'} onClick={() => setActiveTab('reviews')} icon={<FaScroll />} />
+                    <button onClick={() => { logout(); window.location.href = "/login"; }} className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-red-600/10 text-red-500 border border-red-600/20">
+                        <FaSignOutAlt />
+                    </button>
+                </div>
+
                 {/* HEADER */}
-                <header className="px-8 py-5 border-b border-[var(--saga-border)] flex items-center justify-between bg-[var(--saga-glass-bg)] backdrop-blur-md sticky top-0 z-20 transition-all duration-500">
+                <header className="px-4 md:px-8 py-5 border-b border-[var(--saga-border)] flex flex-col md:flex-row md:items-center justify-between bg-[var(--saga-glass-bg)] backdrop-blur-md sticky top-0 z-20 transition-all duration-500 gap-4 md:gap-0">
                     <div>
-                        <h2 className="text-xl font-black uppercase tracking-tight text-[var(--saga-text)] flex items-center gap-3">
+                        <h2 className="text-lg md:text-xl font-black uppercase tracking-tight text-[var(--saga-text)] flex items-center gap-3">
                             <span className="text-red-600 opacity-40">/</span>
                             {activeTab === 'users' ? 'Operative Database' :
                                 activeTab === 'content' ? 'Content Overwatch' :
@@ -250,14 +262,14 @@ export default function AdminDashboard() {
                                             'System Status'}
                         </h2>
                     </div>
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
                         <div className="px-4 py-1.5 rounded-full border border-[var(--saga-border)] bg-[var(--saga-surface)] text-[9px] font-mono text-[var(--saga-text-dim)] shadow-inner hidden lg:block tracking-widest">
                             SIGNAL_SYNC: {new Date().toLocaleTimeString([], { hour12: false })}
                         </div>
 
                         {/* COMMANDER PROFILE */}
-                        <div className="flex items-center gap-4 pl-6 border-l border-[var(--saga-border)]">
-                            <div className="text-right hidden sm:block">
+                        <div className="flex items-center gap-4 pl-0 md:pl-6 border-l-0 md:border-l border-[var(--saga-border)]">
+                            <div className="text-right block">
                                 <p className="text-[10px] font-black text-[var(--saga-text)] leading-none uppercase tracking-widest">{user?.username}</p>
                                 <p className="text-[8px] text-red-500 uppercase tracking-[0.3em] leading-none mt-1 font-bold">Commander</p>
                             </div>
@@ -269,11 +281,11 @@ export default function AdminDashboard() {
                     </div>
                 </header>
 
-                <div className="p-8 relative z-0">
+                <div className="p-4 md:p-8 relative z-0">
                     {activeTab === 'overview' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {/* KPIS */}
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                                 <StatCard label="Total Operatives" value={stats.users} color="red" />
                                 <StatCard label="Active Sectors" value={stats.clubs || 0} color="blue" />
                                 <StatCard label="Intel Reports" value={stats.discussions} color="amber" />
@@ -379,6 +391,21 @@ export default function AdminDashboard() {
             </main>
         </div>
     );
+}
+
+
+function MobileTabButton({ active, onClick, icon }) {
+    return (
+        <button
+            onClick={onClick}
+            className={`w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl transition-all ${active
+                ? 'bg-red-600 text-white shadow-neon-red'
+                : 'bg-[var(--saga-surface-hover)] text-[var(--saga-text-dim)] border border-[var(--saga-border)]'
+                }`}
+        >
+            <span className="text-lg">{icon}</span>
+        </button>
+    )
 }
 
 // Helper Components

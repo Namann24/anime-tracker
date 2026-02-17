@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { getAIRecommendations } from "../../services/animeService";
 import { useWatchlist } from "../../context/WatchlistContext";
@@ -14,6 +14,7 @@ export default function AIRecommendations() {
     const [addingId, setAddingId] = useState(null);
     const [hasAttempted, setHasAttempted] = useState(false);
     const [error, setError] = useState(null);
+    const scrollContainerRef = useRef(null);
 
     const isInWatchlist = (malId) => watchlist.some(a => a.mal_id === malId);
 
@@ -131,32 +132,56 @@ export default function AIRecommendations() {
         );
     }
 
+    const scroll = (direction) => {
+        if (scrollContainerRef.current) {
+            const { current } = scrollContainerRef;
+            const scrollAmount = direction === 'left' ? -300 : 300;
+            current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    };
+
     return (
-        <div className="py-16">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="py-8 md:py-16">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
                 <div>
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex flex-col items-start gap-2 mb-2">
                         <span className="px-2 py-0.5 bg-saga-accent/20 border border-saga-accent/30 text-[9px] font-black text-saga-accent rounded uppercase tracking-[0.2em] shadow-neon-red/10">Neural Analysis</span>
-                        <h2 className="font-shonen text-4xl md:text-5xl text-saga-text uppercase leading-none">DESTINY DISCOVERIES</h2>
+                        <h2 className="font-shonen text-3xl md:text-5xl text-saga-text uppercase leading-none mt-1">DESTINY DISCOVERIES</h2>
                     </div>
-                    <p className="text-saga-text-dim text-sm font-medium italic">Custom chronicles predicted by the Prophecy Engine based on your watchlist.</p>
+                    <p className="text-saga-text-dim text-xs md:text-sm font-medium italic max-w-md">Custom chronicles predicted by the Prophecy Engine based on your watchlist.</p>
                 </div>
-                <SagaButton
-                    variant="secondary"
-                    size="sm"
-                    onClick={loadRecs}
-                    disabled={loading}
-                    className="self-start md:self-auto"
-                    icon={<RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />}
-                >
-                    Recalibrate Neural Link
-                </SagaButton>
+                <div className="flex items-center gap-4 self-start md:self-auto w-full md:w-auto justify-between md:justify-end">
+                    <SagaButton
+                        variant="secondary"
+                        size="sm"
+                        onClick={loadRecs}
+                        disabled={loading}
+                        className="order-last md:order-first"
+                        icon={<RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />}
+                    >
+                        Recalibrate
+                    </SagaButton>
+
+                    {/* Mobile Scroll Controls */}
+                    <div className="flex md:hidden gap-2">
+                        <button onClick={() => scroll('left')} className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform text-white">
+                            <span className="text-lg">←</span>
+                        </button>
+                        <button onClick={() => scroll('right')} className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform text-white">
+                            <span className="text-lg">→</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-5">
+            {/* RESPONSIVE LAYOUT: Horizontal Slider on Mobile, Grid on Tablet/Desktop */}
+            <div
+                ref={scrollContainerRef}
+                className="flex md:grid md:grid-cols-4 lg:grid-cols-8 gap-4 md:gap-5 overflow-x-auto md:overflow-visible pb-8 md:pb-0 snap-x snap-mandatory no-scrollbar -mx-6 px-6 md:mx-0 md:px-0 scroll-smooth"
+            >
                 {recommendations.map(anime => (
-                    <div key={anime.mal_id} className="group relative">
-                        <div className="aspect-[2/3] overflow-hidden rounded-2xl bg-saga-surface border border-saga-border relative shadow-lg transition-all duration-500 hover:-translate-y-2 hover:border-saga-accent/50 group-hover:shadow-2xl">
+                    <div key={anime.mal_id} className="group relative min-w-[150px] md:min-w-0 snap-start">
+                        <div className="aspect-[2/3] overflow-hidden rounded-xl md:rounded-2xl bg-saga-surface border border-saga-border relative shadow-lg transition-all duration-500 hover:-translate-y-2 hover:border-saga-accent/50 group-hover:shadow-2xl">
                             <img
                                 src={anime.images?.jpg?.image_url}
                                 alt={anime.title}
@@ -186,7 +211,7 @@ export default function AIRecommendations() {
                                 )}
                             </div>
 
-                            <div className="absolute top-3 right-3 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-black text-amber-400 border border-white/10">
+                            <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-black/80 backdrop-blur-md px-1.5 py-0.5 rounded-md text-[9px] md:text-[10px] font-black text-amber-400 border border-white/10">
                                 ★ {anime.score}
                             </div>
                         </div>

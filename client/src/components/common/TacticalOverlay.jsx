@@ -7,10 +7,7 @@ export default function TacticalOverlay() {
             <div className="absolute inset-0 bg-noise opacity-[0.03]"></div>
 
             {/* SUBTLE CORNER MARKERS (Minimal) */}
-            <div className="absolute top-6 left-6 w-2 h-2 border-t border-l border-[var(--saga-text-dim)]/30"></div>
-            <div className="absolute top-6 right-6 w-2 h-2 border-t border-r border-[var(--saga-text-dim)]/30"></div>
-            <div className="absolute bottom-6 left-6 w-2 h-2 border-b border-l border-[var(--saga-text-dim)]/30"></div>
-            <div className="absolute bottom-6 right-6 w-2 h-2 border-b border-r border-[var(--saga-text-dim)]/30"></div>
+            {/* CORNER MARKERS REMOVED */}
 
         </div>
     );
