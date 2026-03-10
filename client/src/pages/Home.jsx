@@ -10,6 +10,7 @@ import { useNotifications } from "../context/NotificationContext";
 import SagaButton from "../components/common/SagaButton";
 import useScrollReveal from "../hooks/useScrollReveal";
 import SagaSkeleton from "../components/common/SagaSkeleton";
+import { LayoutContainer, Section, PageHeader, PanelCard, ContentGrid } from "../components/layout";
 import {
   Flame,
   Calendar,
@@ -38,7 +39,7 @@ export default function Home() {
     topWarriors: [],
     recentReviews: []
   });
-  const { notifications } = useNotifications();
+  const { notifications, refreshNotifications } = useNotifications();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,15 +75,20 @@ export default function Home() {
       setLoading(false);
     }
     loadAll();
-  }, []);
+    // keep tactical hub feed fresh
+    refreshNotifications?.();
+  }, [refreshNotifications]);
 
   return (
     <div className="min-h-screen text-saga-text pb-20 overflow-x-hidden transition-colors duration-500 saga-animate-in">
       {/* INFINITE SAGA HERO */}
-      <div className="relative min-h-[75vh] md:min-h-[90vh] flex items-center pt-24 md:pt-32 pb-12 md:pb-20 bg-transparent">
+      <div className="relative min-h-[75vh] md:min-h-[90vh] flex items-center pt-24 md:pt-32 pb-12 md:pb-16 bg-transparent overflow-hidden">
         {/* Animated Background Elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute left-[-8%] top-[8%] w-[520px] h-[520px] rounded-full" style={{ background: 'radial-gradient(60% 60% at 40% 40%, rgba(255,70,70,0.18), rgba(255,70,70,0))' }}></div>
+        </div>
 
-        <div className="max-w-[1400px] mx-auto px-6 relative z-10 w-full">
+        <LayoutContainer className="relative z-10 w-full section-stack">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
             <div className="flex-1 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-red-600/30 bg-red-600/10 text-red-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-4 md:mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -90,12 +96,18 @@ export default function Home() {
                 The Next Level Tracking
               </div>
 
-              <h1 className="font-shonen mb-4 md:mb-6 leading-[0.9] md:leading-[0.85] text-saga-text">
-                <span className="block text-[clamp(3.5rem,10vw,8rem)] animate-in fade-in slide-in-from-left-8 duration-700 delay-100">WRITE YOUR</span>
-                <span className="block text-[clamp(3.5rem,10vw,8rem)] text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 font-outline-sm text-glow animate-in fade-in slide-in-from-right-8 duration-700 delay-200">OWN SAGA.</span>
+              <h1 className="font-shonen mb-4 md:mb-6 leading-[0.9] md:leading-[0.85] text-saga-text relative hero-title">
+                <span className="absolute -inset-6 rounded-[32px] bg-gradient-to-r from-black/30 via-transparent to-transparent pointer-events-none"></span>
+                <span className="block animate-in fade-in slide-in-from-left-8 duration-700 delay-100 relative drop-shadow-[0_6px_24px_rgba(0,0,0,0.5)]">
+                  WRITE YOUR
+                </span>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-300 font-outline-sm animate-in fade-in slide-in-from-right-8 duration-700 delay-200 relative overflow-hidden drop-shadow-[0_12px_30px_rgba(0,0,0,0.55)] light-sweep-once text-white">
+                  <span className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(55% 55% at 50% 50%, rgba(255,70,70,0.22), rgba(0,0,0,0))', opacity: 0.45 }}></span>
+                  <span className="relative z-10">OWN SAGA.</span>
+                </span>
               </h1>
 
-              <p className="text-sm md:text-lg text-saga-text-dim mb-6 md:mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 mobile-clean-text">
+              <p className="text-sm md:text-lg text-saga-text-dim mb-6 md:mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 mobile-clean-text balanced-text">
                 Experience the ultimate anime chronicling sanctuary. <br className="hidden md:block" />
                 Track your progress, discover legendary series, and <br className="hidden md:block" />
                 forge your legacy among global fans.
@@ -107,7 +119,7 @@ export default function Home() {
                     variant="primary"
                     size="lg"
                     onClick={() => navigate("/watchlist")}
-                    className="shadow-neon-red shadow-lg w-full sm:w-auto justify-center"
+                    className="shadow-neon-red shadow-lg w-full sm:w-auto justify-center interactive-soft"
                   >
                     Open Chronicles
                   </SagaButton>
@@ -117,7 +129,7 @@ export default function Home() {
                       variant="primary"
                       size="lg"
                       onClick={() => navigate("/register")}
-                      className="shadow-neon-red shadow-lg w-full sm:w-auto justify-center"
+                      className="shadow-neon-red shadow-lg w-full sm:w-auto justify-center interactive-soft"
                     >
                       Begin Journey
                     </SagaButton>
@@ -125,7 +137,7 @@ export default function Home() {
                       variant="outline"
                       size="lg"
                       onClick={() => navigate("/login")}
-                      className="w-full sm:w-auto justify-center"
+                      className="w-full sm:w-auto justify-center interactive-soft"
                     >
                       Login
                     </SagaButton>
@@ -141,8 +153,8 @@ export default function Home() {
                 <div className="hidden md:block absolute -bottom-4 -left-4 w-full h-full border border-saga-border rounded-[32px] md:rounded-[40px] bg-saga-surface/50 backdrop-blur-sm transition-transform duration-500 group-hover:rotate-2 group-hover:translate-x-2 group-hover:translate-y-2"></div>
 
                 {/* Main HUD Panel */}
-                <div className="relative md:absolute inset-0 border border-saga-border rounded-[2rem] md:rounded-[40px] overflow-hidden shadow-2xl bg-saga-glass-bg backdrop-blur-xl transition-all duration-700 group-hover:-translate-y-2">
-                  <div className="absolute inset-0 bg-halftone opacity-[0.03] z-10 pointer-events-none"></div>
+                <div className="relative md:absolute inset-0 rounded-[2rem] md:rounded-[40px] overflow-hidden shadow-2xl glass-panel-strong transition-all duration-700 group-hover:-translate-y-2">
+                        <div className="absolute inset-0 bg-halftone opacity-[0.04] z-10 pointer-events-none"></div>
 
                   <div className="relative p-6 md:p-8 flex flex-col justify-between z-20 gap-6 md:gap-0 h-full">
                     <div className="flex justify-between items-start">
@@ -198,7 +210,7 @@ export default function Home() {
                           })()
                         ) : (
                           <>
-                            <div className="p-3 md:p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item">
+                            <div className="p-3 md:p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item card-surface">
                               <div className="flex items-center gap-3 md:gap-4">
                                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-red-600/10 flex items-center justify-center text-red-500 group-hover/item:scale-110 transition-transform shadow-inner shrink-0">🔔</div>
                                 <div className="flex flex-col">
@@ -207,7 +219,7 @@ export default function Home() {
                                 </div>
                               </div>
                             </div>
-                            <div className="hidden md:block p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item relative overflow-hidden">
+                            <div className="hidden md:block p-4 rounded-xl border border-[var(--saga-border)] bg-[var(--saga-surface)] hover:bg-[var(--saga-surface-hover)] transition-colors group/item relative overflow-hidden card-surface">
                               <div className="absolute inset-x-0 bottom-0 h-[2px] bg-red-600/50 animate-progress"></div>
                               <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-lg bg-orange-600/10 flex items-center justify-center text-orange-500 group-hover/item:scale-110 transition-transform shadow-inner">🛰️</div>
@@ -227,7 +239,7 @@ export default function Home() {
                         <div className="w-2 h-2 rounded-full bg-saga-accent shadow-neon-red"></div>
                         <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-saga-text-dim">AI Sync Active</span>
                       </div>
-                      <Link to="/analytics" className="text-[9px] md:text-[10px] font-black text-saga-accent uppercase tracking-widest hover:translate-x-1 transition-transform flex items-center gap-1 group/link">View Details <span className="group-hover/link:translate-x-1 transition-transform">→</span></Link>
+                      <Link to="/notifications" className="text-[9px] md:text-[10px] font-black text-saga-accent uppercase tracking-widest hover:translate-x-1 transition-transform flex items-center gap-1 group/link">View Details <span className="group-hover/link:translate-x-1 transition-transform">→</span></Link>
                     </div>
                   </div>
                 </div>
@@ -245,15 +257,15 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
+        </LayoutContainer>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 mt-20">
+        <LayoutContainer className="mt-16 md:mt-20 section-stack">
         {/* AI RECOMMENDATIONS */}
         {user && (
-          <div className="mb-24">
+          <Section className="mb-8">
             <AIRecommendations />
-          </div>
+          </Section>
         )}
 
         {loading ? (
@@ -264,7 +276,7 @@ export default function Home() {
             <div className="h-[400px] bg-[var(--saga-surface)] rounded-3xl animate-pulse"></div>
           </div>
         ) : (
-          <div className="space-y-24">
+          <div className="space-y-20 md:space-y-24">
             <RevealSection delay="0.1s">
               <AnimeRow title="Trending Sagas" items={sections.trending} icon={<Flame className="text-orange-500" />} />
             </RevealSection>
@@ -374,7 +386,7 @@ export default function Home() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {sections.recentReviews.map((rev) => (
                     <div key={rev._id} className="bg-saga-surface p-10 rounded-[2.5rem] border border-saga-border relative group overflow-hidden hover:border-saga-accent/30 transition-all duration-700 hover:-translate-y-2 backdrop-blur-md">
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-saga-accent/5 blur-3xl rounded-full"></div>
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-saga-accent/8 blur-3xl rounded-full"></div>
                       <div className="flex justify-between items-start mb-8">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-saga-surface border border-saga-border overflow-hidden flex items-center justify-center">
@@ -431,7 +443,7 @@ export default function Home() {
             desc="A permanent archive of your journey through the worlds of anime."
           />
         </div>
-      </div>
+      </LayoutContainer>
     </div>
   );
 }
@@ -453,7 +465,7 @@ function RevealSection({ children, delay = '0s', className = '' }) {
 function LandingCard({ title, desc, action, link, bg }) {
   const navigate = useNavigate();
   return (
-    <div className={`relative p-12 rounded-3xl border border-saga-border overflow-hidden group/card bg-saga-surface transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl backdrop-blur-md`}>
+    <div className={`relative p-8 md:p-12 rounded-3xl overflow-hidden group/card card-surface backdrop-blur-md`}>
       <div className={`absolute inset-0 opacity-20 ${bg}`}></div>
       <div className="absolute inset-0 halftone opacity-[0.05] pointer-events-none"></div>
       <div className="relative z-10">
@@ -470,12 +482,12 @@ function LandingCard({ title, desc, action, link, bg }) {
 
 function FeatureHighlight({ icon, title, desc }) {
   return (
-    <div className="p-10 bg-saga-surface border border-saga-border rounded-2xl hover:border-saga-accent/30 group transition-all hover:-translate-y-1 hover:shadow-lg backdrop-blur-md">
-      <div className="w-16 h-16 rounded-2xl bg-saga-accent/5 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 border border-saga-border/50">
+    <div className="p-8 md:p-10 rounded-2xl card-surface group transition-all hover:-translate-y-1 backdrop-blur-md">
+      <div className="w-16 h-16 rounded-2xl bg-saga-accent/5 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 border border-saga-border/50">
         {icon}
       </div>
-      <h3 className="font-shonen text-2xl text-saga-text mb-4 tracking-wider">{title}</h3>
-      <p className="text-saga-text-dim leading-relaxed font-medium">{desc}</p>
+      <h3 className="font-shonen section-title text-saga-text mb-3 tracking-wider">{title}</h3>
+      <p className="text-saga-text-dim leading-relaxed font-medium body-copy">{desc}</p>
     </div>
   );
 }

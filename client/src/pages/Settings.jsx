@@ -74,7 +74,7 @@ export default function Settings() {
     };
 
     return (
-        <div className="min-h-screen pt-24 pb-20 px-4 max-w-2xl mx-auto relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="min-h-screen pt-24 pb-20 layout-shell max-w-2xl relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
                 <div className="w-12 h-12 rounded-2xl bg-saga-surface border border-saga-border flex items-center justify-center shadow-lg shadow-black/50">

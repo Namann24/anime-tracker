@@ -105,7 +105,7 @@ export default function Analytics() {
 
   return (
     <div className="min-h-screen pt-24 md:pt-32 pb-24 px-4 md:px-12 transition-colors duration-500 saga-animate-in">
-      <div className="max-w-[1400px] mx-auto">
+      <div className="layout-shell section-stack">
 
         {/* HEADER */}
         <header className="mb-12 md:mb-16 relative">

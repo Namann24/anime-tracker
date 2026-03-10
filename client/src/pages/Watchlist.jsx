@@ -267,7 +267,7 @@ export default function Watchlist() {
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] mix-blend-overlay"></div>
       </div>
 
-      <div className="max-w-[1500px] mx-auto px-4 md:px-8 relative z-10">
+      <div className="layout-shell relative z-10 section-stack">
 
         {/* 📋 ARCHIVE COMMAND HEADER */}
         <header className="pt-24 md:pt-40 mb-16 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-10">

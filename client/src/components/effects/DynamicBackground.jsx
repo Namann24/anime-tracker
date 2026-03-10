@@ -1,38 +1,84 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function DynamicBackground() {
     const { theme } = useTheme();
-    // Static Position - Center Screen
-    const mousePos = { x: 50, y: 50 };
+    const glowRef = useRef(null);
+    const starsRef = useRef(null);
+
+    useEffect(() => {
+        const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+        if (prefersReduced) return;
+        let frame;
+        const handlePointer = (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 10;
+            const y = (e.clientY / window.innerHeight - 0.5) * 10;
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(() => {
+                if (glowRef.current) {
+                    glowRef.current.style.setProperty('--px', `${x}px`);
+                    glowRef.current.style.setProperty('--py', `${y}px`);
+                }
+                if (starsRef.current) {
+                    starsRef.current.style.setProperty('--px', `${x * 0.2}px`);
+                    starsRef.current.style.setProperty('--py', `${y * 0.2}px`);
+                }
+            });
+        };
+        window.addEventListener('pointermove', handlePointer, { passive: true });
+        return () => {
+            window.removeEventListener('pointermove', handlePointer);
+            cancelAnimationFrame(frame);
+        };
+    }, []);
+
+    // Palette per theme
+    const baseGradientDark = 'linear-gradient(180deg, #06070c 0%, #0b0c12 45%, #11131a 100%)';
+    const baseGradientLight = 'linear-gradient(180deg, #ffffff 0%, #f5f5f7 40%, #f0f0f3 100%)';
+    const accentGlow = 'radial-gradient(60% 60% at 40% 40%, rgba(255,70,70,0.18), rgba(255,70,70,0))';
 
     return (
-        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-[var(--saga-bg)] transition-colors duration-700">
-            {/* 1. Base Gradient Mesh - Deep Space with Lighter Bottom */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[var(--saga-bg)] via-[var(--saga-bg)] to-[#1a0505] transition-colors duration-700"></div>
+        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none transition-colors duration-700" style={{ background: theme === 'light' ? '#ffffff' : '#0b0b0f' }}>
+            {/* 1. Base Gradient */}
+            <div className="absolute inset-0 transition-opacity duration-700" style={{ background: theme === 'light' ? baseGradientLight : baseGradientDark }}></div>
 
-            {/* 2. ATMOSPHERIC NEBULA (Subtle & Elegant) */}
-            {/* Orb 1: Primary Red - Reduced Opacity */}
+            {/* 2. Accent Radial Glow */}
             <div
-                className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] bg-red-600/10 rounded-full blur-[80px] animate-float mix-blend-screen transition-colors duration-700"
+                className="absolute inset-0 will-change-transform"
+                style={{
+                    backgroundImage: accentGlow,
+                    transform: 'translate3d(calc(var(--px, 0px) * 0.4), calc(var(--py, 0px) * 0.4), 0)',
+                }}
+                ref={glowRef}
             ></div>
 
-            {/* Orb 2: Amber - Reduced Opacity */}
+            {/* 3. Starfield / particles */}
             <div
-                className="absolute bottom-[-20%] right-[-10%] w-[80vw] h-[80vw] bg-amber-600/05 rounded-full blur-[100px] animate-float-delayed mix-blend-screen transition-colors duration-700"
+                ref={starsRef}
+                className="absolute inset-0"
+                style={{
+                    backgroundImage: 'radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.08), transparent), radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.05), transparent), radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,0.06), transparent)',
+                    backgroundSize: '320px 320px, 420px 420px, 520px 520px',
+                    animation: 'starsFloat 60s linear infinite',
+                    opacity: 0.35,
+                    transform: 'translate3d(calc(var(--px, 0px) * 0.2), calc(var(--py, 0px) * 0.2), 0)',
+                    willChange: 'transform',
+                }}
             ></div>
 
-            {/* Orb 3: Center Pulse - Very Subtle */}
+            {/* 4. Light rays */}
             <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/05 rounded-full blur-[60px] mix-blend-screen pointer-events-none animate-pulse-slow"
+                className="absolute inset-0"
+                style={{
+                    backgroundImage: 'linear-gradient(120deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 30%), linear-gradient(135deg, rgba(255,255,255,0.03) 10%, rgba(255,255,255,0) 40%)',
+                    backgroundSize: '140% 140%',
+                    opacity: 0.4,
+                    animation: 'raysDrift 28s ease-in-out infinite alternate',
+                }}
             ></div>
 
-            {/* 3. Texture Layers - Reduced Density */}
-            <div className="absolute inset-0 bg-noise opacity-[0.03] mix-blend-overlay"></div>
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(120,120,120,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(120,120,120,0.03)_1px,transparent_1px)] bg-[size:60px_60px] opacity-10"></div>
-
-            {/* 4. Vignette */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--saga-bg)] via-transparent to-transparent opacity-80"></div>
+            {/* Subtle Noise */}
+            <div className="absolute inset-0 bg-noise opacity-[0.03] mix-blend-soft-light"></div>
         </div>
     );
 }

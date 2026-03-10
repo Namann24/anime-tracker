@@ -33,7 +33,8 @@ export default function Navbar() {
     <nav className={`fixed top-0 left-0 right-0 z-[100] flex justify-center pt-2 md:pt-8 pb-4 transition-all duration-700 pointer-events-none ${isScrolled ? 'translate-y-[-5px] md:translate-y-[-15px]' : ''}`}>
 
       {/* 🌌 AETHER DOCK v6.0 - MOBILE HYBRID */}
-      <div className={`flex items-center justify-between px-4 md:px-6 py-2 bg-saga-surface/80 backdrop-blur-2xl border border-white/5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] pointer-events-auto transition-all duration-500 hover:bg-saga-surface/90 hover:border-white/10 group/dock w-[95%] max-w-[1400px] md:w-auto`}>
+      <div className={`flex items-center justify-between px-4 md:px-6 py-2 bg-saga-surface/80 backdrop-blur-2xl border border-white/5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] pointer-events-auto transition-all duration-500 hover:bg-saga-surface/90 hover:border-white/10 group/dock w-[95%] max-w-[1400px] md:w-auto relative overflow-hidden`}>
+        <div className="absolute inset-0 opacity-60 bg-gradient-to-r from-white/5 via-transparent to-white/5 blur-2xl pointer-events-none"></div>
 
         {/* 1. BRAND SECTOR */}
         <div className="flex items-center gap-4">
@@ -176,9 +177,9 @@ function DockLink({ to, children, active }) {
     <Link
       to={to}
       className={`
-        relative px-4 py-2 transition-all duration-500
-        text-[10px] font-black uppercase tracking-[0.25em]
-        ${active ? 'text-[var(--saga-text)]' : 'text-saga-text-dim hover:text-[var(--saga-text)]'}
+        relative px-4 py-2 transition-all duration-500 nav-underline
+        text-[10px] font-black uppercase tracking-[0.25em] hover:-translate-y-[1px]
+        ${active ? 'text-[var(--saga-text)] is-active drop-shadow-[0_0_10px_rgba(255,70,70,0.35)]' : 'text-saga-text-dim hover:text-[var(--saga-text)]'}
       `}
     >
       <div className="relative flex flex-col items-center group/link">
@@ -198,8 +199,8 @@ function NavLinkMini({ to, children, active }) {
   return (
     <Link
       to={to}
-      className={`relative px-3 py-1 text-[9px] font-black uppercase tracking-widest transition-all ${active
-        ? 'text-red-500'
+      className={`relative px-3 py-1 text-[9px] font-black uppercase tracking-widest transition-all nav-underline hover:-translate-y-[1px] ${active
+        ? 'text-red-500 is-active drop-shadow-[0_0_8px_rgba(255,70,70,0.25)]'
         : 'text-saga-text-dim hover:text-[var(--saga-text)]'
         }`}
     >

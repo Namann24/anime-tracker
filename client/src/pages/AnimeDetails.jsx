@@ -207,7 +207,7 @@ export default function AnimeDetails() {
                 </div>
 
                 <div className="relative z-20 flex items-end min-h-[500px] md:h-full pt-32 md:pt-0">
-                    <div className="max-w-[1400px] mx-auto w-full px-6 flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-end pb-12 md:pb-20">
+            <div className="layout-shell w-full flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-end pb-12 md:pb-16">
                         {/* Poster */}
                         <div className="relative group/poster perspective-2000 shrink-0 hidden md:block">
                             <div className="absolute -inset-6 bg-red-600/20 blur-[60px] rounded-3xl opacity-0 group-hover/poster:opacity-100 transition-opacity duration-1000"></div>
@@ -300,7 +300,7 @@ export default function AnimeDetails() {
             </div>
 
             {/* TABS NAVIGATION */}
-            <div className="max-w-[1400px] mx-auto px-6 mb-12 border-b border-[var(--saga-border)]">
+            <div className="layout-shell mb-12 border-b border-[var(--saga-border)]">
                 <div className="flex gap-12 overflow-x-auto no-scrollbar">
                     {["Overview", "Characters", "Staff", "Reviews"].map((tab) => (
                         <button
@@ -320,7 +320,7 @@ export default function AnimeDetails() {
                 </div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-4 md:px-6 pb-12 md:pb-20 grid lg:grid-cols-12 gap-8 md:gap-16">
+            <div className="layout-shell pb-12 md:pb-16 grid lg:grid-cols-12 gap-8 md:gap-14">
                 {/* CONTENT AREA */}
                 <div className="lg:col-span-8 min-h-[500px]">
 

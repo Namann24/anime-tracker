@@ -9,11 +9,11 @@ const SagaButton = ({
     full = false,
     ...props
 }) => {
-    const baseStyles = "relative inline-flex items-center justify-center font-black uppercase tracking-widest transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none group overflow-hidden";
+    const baseStyles = "relative inline-flex items-center justify-center font-black uppercase tracking-widest transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none group overflow-hidden focus-ring shine-on-hover micro-press";
 
     const variants = {
-        primary: "bg-saga-accent text-white shadow-neon-red hover:bg-saga-accent/90",
-        secondary: "bg-saga-surface text-saga-text border border-saga-border hover:bg-saga-surface-hover backdrop-blur-md",
+        primary: "cta-glow text-white shadow-neon-red hover:scale-[1.015] energy-primary",
+        secondary: "glass-panel text-saga-text soft-border hover:bg-saga-surface-hover",
         outline: "bg-transparent text-saga-text border-2 border-saga-border hover:border-saga-accent/50 hover:bg-saga-accent/10",
         ghost: "bg-transparent text-saga-text-dim hover:text-saga-text hover:bg-saga-surface-hover",
         impact: "bg-saga-text text-saga-bg shadow-impact hover:-translate-x-1 hover:-translate-y-1 hover:shadow-neon-red active:translate-x-0 active:translate-y-0 active:shadow-none"
@@ -42,6 +42,11 @@ const SagaButton = ({
             {/* Gloss Effect for non-ghost/outline */}
             {variant !== 'ghost' && variant !== 'outline' && (
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-white/20"></div>
+            )}
+
+            {/* Ambient glow halo */}
+            {variant === 'primary' && (
+                <div className="absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/10 via-transparent to-red-600/20 blur-2xl opacity-60 pointer-events-none"></div>
             )}
 
             {/* Speed Lines on Hover (for primary/impact) */}

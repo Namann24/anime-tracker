@@ -31,7 +31,7 @@ export default function Help() {
     };
     return (
         <div className="min-h-screen bg-[var(--saga-bg)] text-[var(--saga-text)] pb-24 overflow-x-hidden transition-colors">
-            <div className="max-w-[1000px] mx-auto px-6 pt-24 md:pt-32">
+            <div className="layout-shell max-w-[1000px] pt-24 md:pt-32 section-stack">
                 <header className="text-center mb-16 md:mb-24 relative overflow-hidden">
                     <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-red-600/30 to-transparent"></div>
                     <div className="flex items-center justify-center gap-2 mb-4 md:mb-6">

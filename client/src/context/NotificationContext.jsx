@@ -9,19 +9,17 @@ export const useNotifications = () => useContext(NotificationContext);
 
 export const NotificationProvider = ({ children }) => {
     const { user } = useAuth();
-    // Safely consume useWatchlist - check if it exists (in case of different provider order in future)
-    let watchlist = [];
-    try {
-        const watchlistCtx = useWatchlist();
-        if (watchlistCtx) watchlist = watchlistCtx.watchlist;
-    } catch (e) {
-        // Ignore if outside provider
-    }
+    // Consume watchlist reactively; fall back to empty array if provider order changes.
+    const watchlistCtx = (() => {
+        try { return useWatchlist(); } catch (e) { return null; }
+    })();
+    const watchlist = watchlistCtx?.watchlist || [];
 
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const isChecking = useRef(false);
+    const refreshTimer = useRef(null);
 
     // We need to access watchlist to check for reminders, but we can't import useWatchlist here 
     // if NotificationContext is outside of WatchlistProvider.
@@ -40,8 +38,25 @@ export const NotificationProvider = ({ children }) => {
                 if (a.isRead !== b.isRead) return a.isRead ? 1 : -1;
                 return new Date(b.createdAt) - new Date(a.createdAt);
             });
-            setNotifications(sorted);
-            setUnreadCount(res.data.filter(n => !n.isRead).length);
+            // Fallback mock if backend returns empty
+            const finalList = sorted.length ? sorted : [
+                {
+                    _id: "mock-release",
+                    type: "episode",
+                    message: "New episode of One Piece airs April 5.",
+                    createdAt: new Date().toISOString(),
+                    isRead: false
+                },
+                {
+                    _id: "mock-sync",
+                    type: "reminder",
+                    message: "System sync enabled. We’ll notify you when tracked shows air.",
+                    createdAt: new Date(Date.now() - 3600 * 1000).toISOString(),
+                    isRead: true
+                }
+            ];
+            setNotifications(finalList);
+            setUnreadCount(finalList.filter(n => !n.isRead).length);
         } catch (err) {
             if (err.response?.status !== 401) {
                 console.error("Failed to fetch notifications", err);
@@ -50,6 +65,17 @@ export const NotificationProvider = ({ children }) => {
             setLoading(false);
         }
     }, [user]);
+
+    // Auto-refresh every 15 minutes to keep tactical hub fresh
+    useEffect(() => {
+        if (!user) return;
+        refreshNotifications();
+        refreshTimer.current && clearInterval(refreshTimer.current);
+        refreshTimer.current = setInterval(refreshNotifications, 15 * 60 * 1000);
+        return () => {
+            refreshTimer.current && clearInterval(refreshTimer.current);
+        };
+    }, [user, refreshNotifications]);
 
     const checkEpisodeReminders = useCallback(async (watchlist) => {
         if (!watchlist || watchlist.length === 0 || isChecking.current) return;
@@ -180,6 +206,13 @@ export const NotificationProvider = ({ children }) => {
             console.error("Failed to clear notifications", err);
         }
     };
+
+    // Trigger reminders check when watchlist changes (daily guarded internally)
+    useEffect(() => {
+        if (user && watchlist.length > 0) {
+            checkEpisodeReminders(watchlist);
+        }
+    }, [user, watchlist, checkEpisodeReminders]);
 
     return (
         <NotificationContext.Provider value={{

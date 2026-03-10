@@ -39,7 +39,7 @@ export default function Leaderboard() {
                 <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-red-600/10 blur-[180px] rounded-full animate-pulse-slow delay-1000"></div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto relative z-10">
+            <div className="layout-shell relative z-10 section-stack">
 
                 {/* EPIC HEADER */}
                 <header className="text-center mb-32 md:mb-48">

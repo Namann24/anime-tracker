@@ -198,7 +198,7 @@ export default function Profile() {
 
             </div>
 
-            <div className="relative z-20 -mt-16 md:-mt-32 max-w-[1400px] mx-auto px-4 md:px-6 mb-8 md:mb-24">
+            <div className="relative z-20 -mt-16 md:-mt-32 layout-shell mb-8 md:mb-20">
                 <div className="grid lg:grid-cols-[300px_1fr] xl:grid-cols-[400px_1fr] gap-6 md:gap-12 items-end">
 
                     {/* AVATAR SECTION - Compacted & Centered on Mobile */}
@@ -312,7 +312,7 @@ export default function Profile() {
                 </div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-4 md:px-6 relative z-20">
+            <div className="layout-shell relative z-20 section-stack">
 
 
 

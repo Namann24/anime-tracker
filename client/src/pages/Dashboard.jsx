@@ -81,8 +81,9 @@ export default function Dashboard() {
       </div>
 
       {/* 🚀 ELITE COMMAND HERO */}
-      <section className="relative pt-20 md:pt-32 pb-8 md:pb-12 px-4 md:px-6 lg:px-12 transition-all duration-700">
-        <div className="max-w-[1500px] mx-auto relative min-h-[45vh] md:min-h-[65vh] lg:h-[70vh] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden border border-white/10 shadow-3xl bg-saga-surface/30 backdrop-blur-sm group/hero transition-all duration-500 hover:border-red-600/20">
+      <section className="relative pt-20 md:pt-32 pb-8 md:pb-12 transition-all duration-700">
+        <div className="layout-shell">
+          <div className="relative min-h-[45vh] md:min-h-[65vh] lg:h-[70vh] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden border border-white/10 shadow-3xl bg-saga-surface/30 backdrop-blur-sm group/hero transition-all duration-500 hover:border-red-600/20">
           {loading ? (
             <div className="w-full h-full">
               <SagaSkeleton type="hero" />
@@ -178,10 +179,12 @@ export default function Dashboard() {
             </div>
           )}
         </div>
-      </section>
+      </div>
+    </section>
 
-      {/* 📊 OPERATIONS GRID */}
-      <section className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 mt-12 md:mt-24 relative z-20">
+    {/* 📊 OPERATIONS GRID */}
+    <section className="mt-12 md:mt-24 relative z-20">
+      <div className="layout-shell">
         <div className="flex items-center gap-4 md:gap-6 mb-10">
           <div className="w-1.5 h-8 bg-red-600 rounded-full shadow-neon-red"></div>
           <div>
@@ -239,19 +242,22 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-      </section>
+      </div>
+    </section>
 
-      {/* ⚡ RAPID ACCESS */}
-      <section className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 mt-12 md:mt-28 relative z-20">
+    {/* ⚡ RAPID ACCESS */}
+    <section className="mt-12 md:mt-28 relative z-20">
+      <div className="layout-shell">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <TerminalNode title="Temporal Grid" icon="🗓️" path="/schedule" />
           <TerminalNode title="Elite League" icon="🎖️" path="/leaderboard" />
           <TerminalNode title="Neural Drift" icon="🎲" onClick={handleFeelingLucky} loading={drifting} />
           <TerminalNode title="Master Archive" icon="📂" path="/watchlist" />
         </div>
-      </section>
-    </div>
-  );
+      </div>
+    </section>
+  </div>
+);
 }
 
 function TerminalNode({ title, icon, path, onClick, loading }) {

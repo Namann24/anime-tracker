@@ -9,6 +9,7 @@ import { useToast } from "../context/ToastContext";
 import SagaButton from "../components/common/SagaButton";
 import SagaInput from "../components/common/SagaInput";
 import SagaLogo from "../components/common/SagaLogo";
+import { Shield } from "lucide-react";
 
 export default function Clubs() {
   const { user } = useAuth();
@@ -127,7 +128,7 @@ export default function Clubs() {
 
   return (
     <div className="min-h-screen pt-20 md:pt-32 pb-24 px-4 md:px-12 transition-colors duration-500 saga-animate-in">
-      <div className="max-w-[1400px] mx-auto">
+      <div className="layout-shell section-stack">
 
         {/* HEADER */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16 md:mb-24">

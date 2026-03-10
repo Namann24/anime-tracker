@@ -39,46 +39,46 @@ export default function AnimeRow({ title, items, icon }) {
 
     return (
         <div className="mb-20 group/row">
-            <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                    <div className="w-1.5 h-10 bg-red-600 rounded-full shadow-[0_0_15px_rgba(255,0,60,0.5)]"></div>
-                    <h2 className="font-shonen text-3xl md:text-4xl text-saga-text uppercase tracking-wider flex items-center gap-4">
-                        {icon && <span className="flex items-center justify-center">{icon}</span>}
-                        {title}
-                    </h2>
-                </div>
-                <div className="flex gap-4">
-                    <button
-                        onClick={() => scroll('left')}
-                        disabled={!canScrollLeft}
-                        className={`w-12 h-12 flex items-center justify-center rounded-xl border border-saga-border transition-all duration-300 active:scale-90 ${canScrollLeft
-                            ? "bg-saga-surface text-saga-text hover:bg-saga-accent hover:text-white hover:border-saga-accent hover:shadow-neon-red"
-                            : "bg-saga-surface text-saga-text-dim opacity-20 cursor-not-allowed"
-                            }`}
-                        aria-label="Scroll left"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
-                    </button>
-                    <button
-                        onClick={() => scroll('right')}
-                        disabled={!canScrollRight}
-                        className={`w-12 h-12 flex items-center justify-center rounded-xl border border-saga-border transition-all duration-300 active:scale-90 ${canScrollRight
-                            ? "bg-saga-surface text-saga-text hover:bg-saga-accent hover:text-white hover:border-saga-accent hover:shadow-neon-red"
-                            : "bg-saga-surface text-saga-text-dim opacity-20 cursor-not-allowed"
-                            }`}
-                        aria-label="Scroll right"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" /></svg>
-                    </button>
-                </div>
+        <div className="flex items-center justify-between mb-6 md:mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-1.5 h-10 bg-red-600 rounded-full shadow-[0_0_15px_rgba(255,0,60,0.5)]"></div>
+              <h2 className="font-shonen text-3xl md:text-4xl text-saga-text uppercase tracking-wider flex items-center gap-4">
+                {icon && <span className="flex items-center justify-center">{icon}</span>}
+                {title}
+              </h2>
             </div>
+            <div className="flex gap-4">
+              <button
+                onClick={() => scroll('left')}
+                disabled={!canScrollLeft}
+                className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl border border-saga-border transition-all duration-300 active:scale-90 focus-ring ${canScrollLeft
+                    ? "bg-saga-surface text-saga-text hover:bg-saga-accent hover:text-white hover:border-saga-accent hover:shadow-neon-red"
+                    : "bg-saga-surface text-saga-text-dim opacity-20 cursor-not-allowed"
+                    }`}
+                aria-label="Scroll left"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                disabled={!canScrollRight}
+                className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl border border-saga-border transition-all duration-300 active:scale-90 focus-ring ${canScrollRight
+                    ? "bg-saga-surface text-saga-text hover:bg-saga-accent hover:text-white hover:border-saga-accent hover:shadow-neon-red"
+                    : "bg-saga-surface text-saga-text-dim opacity-20 cursor-not-allowed"
+                    }`}
+                aria-label="Scroll right"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          </div>
 
-            <div
-                ref={scrollRef}
-                onScroll={checkScroll}
-                className="flex gap-8 overflow-x-auto pb-10 pt-4 scrollbar-hide snap-x no-scrollbar"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
+          <div
+            ref={scrollRef}
+            onScroll={checkScroll}
+            className="flex gap-6 md:gap-8 overflow-x-auto pb-8 md:pb-10 pt-4 scrollbar-hide snap-x no-scrollbar"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
                 {uniqueItems.map((anime) => {
                     const isNSFW = anime.rating?.includes('Rx') || (anime.rating?.includes('R+') && !anime.rating?.includes('mild'));
                     // Jikan Rx is Hentai, R+ is Mild Nudity. 
@@ -88,7 +88,7 @@ export default function AnimeRow({ title, items, icon }) {
                         <Link
                             to={`/anime/${anime.mal_id}`}
                             key={anime.mal_id}
-                            className="min-w-[240px] md:min-w-[280px] snap-start group relative rounded-2xl bg-saga-surface border border-saga-border overflow-hidden transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl"
+                            className="min-w-[240px] md:min-w-[280px] snap-start group relative rounded-2xl card-surface overflow-hidden focus-ring"
                         >
                             {/* Halftone Overlay on Hover */}
                             <div className="absolute inset-0 halftone opacity-0 group-hover:opacity-10 pointer-events-none z-30 transition-opacity"></div>

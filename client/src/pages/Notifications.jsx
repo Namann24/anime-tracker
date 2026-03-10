@@ -56,8 +56,8 @@ export default function Notifications() {
     );
 
     return (
-        <div className="min-h-screen saga-cosmic-bg text-[var(--saga-text)] pb-24 pt-24 md:pt-32 px-4 md:px-6 transition-colors duration-500">
-            <div className="max-w-5xl mx-auto">
+        <div className="min-h-screen saga-cosmic-bg text-[var(--saga-text)] pb-20 pt-24 md:pt-32 transition-colors duration-500">
+            <div className="layout-shell max-w-5xl section-stack">
                 {/* HEADER */}
                 <div className="mb-12 md:mb-16">
                     <div className="flex items-center gap-3 mb-4">

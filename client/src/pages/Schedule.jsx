@@ -53,7 +53,7 @@ export default function Schedule() {
 
     return (
         <div className="min-h-screen text-[var(--saga-text)] pb-20 overflow-x-hidden transition-colors duration-500 saga-animate-in">
-            <div className="max-w-[1400px] mx-auto px-4 md:px-6 pt-24 md:pt-32">
+            <div className="layout-shell pt-24 md:pt-32 section-stack">
 
                 {/* THE SIGNAL CORE (HEADER) */}
                 <div className="relative mb-16 md:mb-24 group">

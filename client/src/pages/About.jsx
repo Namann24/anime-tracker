@@ -9,7 +9,7 @@ export default function About() {
             <div className="absolute inset-0 halftone opacity-[0.03] pointer-events-none"></div>
             <div className="absolute -top-24 -left-24 md:-top-48 md:-left-48 w-64 h-64 md:w-96 md:h-96 bg-red-600/5 blur-[80px] md:blur-[120px] rounded-full pointer-events-none"></div>
 
-            <div className="max-w-[1200px] mx-auto px-6 relative z-10">
+            <div className="layout-shell max-w-[1200px] relative z-10 section-stack">
                 <header className="text-center mb-16 md:mb-24 animate-in fade-in slide-in-from-bottom-10 duration-1000 ease-out">
                     <div className="flex justify-center mb-8 md:mb-10 scale-125 md:scale-150">
                         <SagaLogo />

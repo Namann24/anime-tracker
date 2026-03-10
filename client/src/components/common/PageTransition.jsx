@@ -41,7 +41,7 @@ export default function SimplePageTransition({ children }) {
     return (
         <div
             key={location.pathname}
-            className="animate-in fade-in slide-in-from-bottom-4 duration-300 fill-mode-backwards ease-out min-h-[calc(100vh-100px)] flex flex-col"
+            className="page-transition-shell min-h-[calc(100vh-100px)] flex flex-col"
         >
             {children}
         </div>

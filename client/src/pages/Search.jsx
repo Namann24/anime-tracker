@@ -249,7 +249,7 @@ export default function Search() {
                 <div className="absolute inset-0 bg-grid opacity-[0.4] pointer-events-none"></div>
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[var(--saga-accent)]/5 to-transparent pointer-events-none"></div>
 
-                <div className="max-w-[1400px] mx-auto px-6 relative z-10">
+                <div className="layout-shell relative z-10 section-stack">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
                             <div className="flex items-center gap-3 mb-3">
@@ -408,7 +408,7 @@ export default function Search() {
                 </div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-6 mt-12 relative z-10">
+            <div className="layout-shell mt-8 md:mt-12 relative z-10 section-stack">
                 {error ? (
                     <div className="py-32 text-center border-2 border-dashed border-[var(--saga-border)] rounded-[3rem] bg-[var(--saga-surface)]">
                         <div className="text-8xl mb-6 opacity-20 animate-pulse">🔌</div>
