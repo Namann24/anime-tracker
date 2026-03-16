@@ -1,6 +1,11 @@
 import axios from "axios";
 
-const API_URL = `${import.meta.env.VITE_BACKED_URL}/api/reviews`;
+const API_BASE_URL =
+    import.meta.env.VITE_BACKEND_URL ||
+    import.meta.env.VITE_BACKED_URL ||
+    "http://localhost:5001";
+
+const API_URL = `${API_BASE_URL}/api/reviews`;
 
 // Helper to get auth header with token
 const authHeader = () => {

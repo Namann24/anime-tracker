@@ -1,7 +1,12 @@
 import axios from "axios";
 
+const API_BASE_URL =
+  import.meta.env.VITE_BACKEND_URL ||
+  import.meta.env.VITE_BACKED_URL ||
+  "http://localhost:5001";
+
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_BACKED_URL}/api`,
+  baseURL: `${API_BASE_URL}/api`,
 });
 
 api.interceptors.request.use((config) => {
